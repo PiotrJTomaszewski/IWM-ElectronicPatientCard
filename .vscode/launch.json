@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "firefox",
+            "request": "launch",
+            "name": "Launch in Firefox",
+            "url": "http://kpiotrvm:3000",
+            "reAttach": true,
+            "webRoot": "${workspaceFolder}/src",
+            "pathMappings": [
+                {
+                    "url": "http://kpiotrvm:3000/home/piotr/LocalDocuments/electronic_patient_card/src",
+                    "path": "${workspaceFolder}/src"
+                }
+            ]
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch in Chrome",
+            "url": "http://kpiotrvm:3000",
+            "webRoot": "${workspaceFolder}/src",
+        }
+    ]
+}
