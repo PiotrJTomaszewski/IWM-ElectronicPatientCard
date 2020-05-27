@@ -1,5 +1,5 @@
 import React from "react";
-import Patient from "../../models/Patient";
+import Patient from "../../models/PatientModel";
 import PatientsListItem from "./PatientsListItem";
 import Loading from "../Loading";
 import Table from "react-bootstrap/Table";

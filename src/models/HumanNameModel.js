@@ -1,5 +1,5 @@
 import CapitalizeFirstLetter from '../Helpers';
-class HumanName {
+class HumanNameModel {
   constructor(name) {
     this.name = name;
   }
@@ -95,4 +95,4 @@ class HumanName {
 
 }
 
-export default HumanName;
+export default HumanNameModel;

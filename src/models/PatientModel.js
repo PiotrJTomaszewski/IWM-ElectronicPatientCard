@@ -1,13 +1,13 @@
 import capitalizeFirstLetter from "../Helpers";
 import Model from "./Model";
-import HumanName from './HumanName';
+import HumanNameModel from './HumanNameModel';
 
-class Patient extends Model {
+class PatientModel extends Model {
   humanNames = []
   constructor(fhirClient, resource) {
     super(fhirClient, resource);
     this.humanNames = this._getPath('name').map((element) => {
-      return new HumanName(element);
+      return new HumanNameModel(element);
     });
   }
 
@@ -141,4 +141,4 @@ class Patient extends Model {
   }
 }
 
-export default Patient;
+export default PatientModel;
