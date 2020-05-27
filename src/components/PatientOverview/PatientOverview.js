@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import PatientHeader from './PatientHeader';
 import PersonalInformation from './PersonalInformation/PersonalInformation';
-import Card from 'react-bootstrap/Card';
+import TelecomInformation from './PersonalInformation/TelecomInformation';
 
 class PatientOverview extends React.Component {
   state = {
@@ -81,6 +81,9 @@ class PatientOverview extends React.Component {
           <Row>
             <Col>
               <PersonalInformation patient={this.state.patient}/>
+            </Col>
+            <Col>
+              <TelecomInformation patient={this.state.patient}/>
             </Col>
           </Row>
         </Container>

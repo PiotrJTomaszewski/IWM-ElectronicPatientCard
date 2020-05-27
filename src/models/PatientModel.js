@@ -1,14 +1,25 @@
 import capitalizeFirstLetter from "../Helpers";
 import Model from "./Model";
 import HumanNameModel from './HumanNameModel';
+import TelecomModel from "./TelecomModel";
 
 class PatientModel extends Model {
   humanNames = []
+  telecom = []
   constructor(fhirClient, resource) {
     super(fhirClient, resource);
-    this.humanNames = this._getPath('name').map((element) => {
-      return new HumanNameModel(element);
-    });
+    var tmp = this._getPath('name');
+    if (tmp !== undefined) {
+      this.humanNames = tmp.map((element) => {
+        return new HumanNameModel(element);
+      });
+    }
+    tmp = this._getPath('telecom');
+    if (tmp !== undefined) {
+      this.telecom = tmp.map((element) => {
+        return new TelecomModel(element);
+      })
+    }
   }
 
   getId() {
@@ -138,6 +149,10 @@ class PatientModel extends Model {
       return capitalizeFirstLetter(maritalStatus);
     }
     return ifNotFound;
+  }
+
+  getAllTelecom() {
+    return this.telecom;
   }
 }
 

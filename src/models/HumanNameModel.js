@@ -1,4 +1,5 @@
 import CapitalizeFirstLetter from '../Helpers';
+import helperGetPeriod from '../Helpers';
 class HumanNameModel {
   constructor(name) {
     this.name = name;
@@ -47,24 +48,7 @@ class HumanNameModel {
   }
 
   getPeriod(asString = false, ifNotFound=undefined) {
-    var period = this.name.period;
-    if (period) {
-      if (asString) {
-        if (period.start && period.end) {
-          return `From ${period.start} to ${period.end}`;
-        } 
-        if (period.start) {
-          return `From ${period.start}`;
-        }
-        if (period.end) {
-          return `To ${period.end}`;
-        }
-        return ifNotFound;
-      } else {
-        return [period.start, period.end];
-      }
-    }
-    return ifNotFound;
+    return helperGetPeriod(this.name.period, asString, ifNotFound);
   }
 
   getFullName() {
