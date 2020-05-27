@@ -1,5 +1,5 @@
 import React from "react";
-import helperGetPeriod from "../Helpers";
+import {helperGetPeriod} from "../Helpers";
 
 class AddressModel {
   constructor(address) {

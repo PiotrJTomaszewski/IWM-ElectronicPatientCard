@@ -1,4 +1,4 @@
-export default function capitalizeFirstLetter(text) {
+export function capitalizeFirstLetter(text) {
   if (text === undefined) return text;
   return text.substr(0, 1).toUpperCase() + text.substr(1);
 }
@@ -8,6 +8,7 @@ export function helperGetPeriod(
   asString = false,
   ifNotFound = undefined
 ) {
+  console.log("EJ" + period);
   if (period) {
     if (asString) {
       if (period.start && period.end) {
@@ -26,4 +27,3 @@ export function helperGetPeriod(
   }
   return ifNotFound;
 }
-

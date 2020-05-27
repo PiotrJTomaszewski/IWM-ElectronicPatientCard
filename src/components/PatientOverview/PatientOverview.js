@@ -1,22 +1,23 @@
-import React from 'react';
-import Patient from '../../models/PatientModel';
-import Loading from '../Loading';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import PatientHeader from './PatientHeader';
-import PersonalInformation from './PersonalInformation/PersonalInformation';
-import TelecomInformation from './PersonalInformation/TelecomInformation';
-import AddressInformation from './PersonalInformation/AddressInformation';
-import DebugArea from './DebugArea';
+import React from "react";
+import Patient from "../../models/PatientModel";
+import Loading from "../Loading";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import PatientHeader from "./PatientHeader";
+import PersonalInformation from "./PersonalInformation/PersonalInformation";
+import TelecomInformation from "./PersonalInformation/TelecomInformation";
+import AddressInformation from "./PersonalInformation/AddressInformation";
+import IdentifiersList from "./IdentifiersList/IdentifiersList";
+import DebugArea from "./DebugArea";
 
 class PatientOverview extends React.Component {
   state = {
     loading: true,
     patient: {},
     observations: {},
-    medicationStatements: {}
-  }
+    medicationStatements: {},
+  };
 
   constructor(props) {
     super();
@@ -25,7 +26,10 @@ class PatientOverview extends React.Component {
   }
 
   onDownloadSuccess() {
-    var patientModel = new Patient(this.fhirClient, this.fhirClient.getPatient());
+    var patientModel = new Patient(
+      this.fhirClient,
+      this.fhirClient.getPatient()
+    );
     this.setState((state) => {
       return {
         ...state,
@@ -33,26 +37,28 @@ class PatientOverview extends React.Component {
         patient: patientModel,
         // observations: this.fhirClient.getObservations(),
         // medicationStatements: this.fhirClient.getMedicationStatements()
-      }
-    })
+      };
+    });
   }
 
   onDownloadFail(whatFailed) {
     switch (whatFailed) {
-      case 'everything':
-        console.log("Getting all of the patient data failed (Most likely, this operation isn't supported by the server). Trying downloading only necessarry information.");
+      case "everything":
+        console.log(
+          "Getting all of the patient data failed (Most likely, this operation isn't supported by the server). Trying downloading only necessarry information."
+        );
         break;
-      case 'patient':
-        console.log('Patient not found');
+      case "patient":
+        console.log("Patient not found");
         break;
-      case 'observation':
-        console.log('No observation found');
+      case "observation":
+        console.log("No observation found");
         break;
-      case 'medicationStatement':
-        console.log('No medication statement found');
+      case "medicationStatement":
+        console.log("No medication statement found");
         break;
       default:
-        console.log('Other error?!');
+        console.log("Other error?!");
         break;
     }
   }
@@ -69,32 +75,36 @@ class PatientOverview extends React.Component {
     );
   }
 
-
   render() {
     if (this.state.loading) {
-      return <Loading/>;
+      return <Loading />;
     }
     console.log(this.state.patient.getText());
     return (
+      <Container>
         <Container>
           <Row>
-            <PatientHeader patient={this.state.patient}/>
+            <PatientHeader patient={this.state.patient} />
           </Row>
           <Row>
             <Col>
-              <PersonalInformation patient={this.state.patient}/>
+              <PersonalInformation patient={this.state.patient} />
             </Col>
             <Col>
-              <TelecomInformation patient={this.state.patient}/>
+              <TelecomInformation patient={this.state.patient} />
             </Col>
             <Col>
-              <AddressInformation patient={this.state.patient}/>
+              <AddressInformation patient={this.state.patient} />
             </Col>
           </Row>
-          <DebugArea patient={this.state.patient}/>
         </Container>
-      );
+        <Container>
+          <IdentifiersList patient={this.state.patient} />
+        </Container>
+        <DebugArea patient={this.state.patient} />
+      </Container>
+    );
   }
 }
 
-export default PatientOverview
+export default PatientOverview;

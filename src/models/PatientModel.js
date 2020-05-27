@@ -1,13 +1,15 @@
-import capitalizeFirstLetter from "../Helpers";
+import {capitalizeFirstLetter} from "../Helpers";
 import Model from "./Model";
 import HumanNameModel from './HumanNameModel';
 import TelecomModel from "./TelecomModel";
 import AddressModel from "./AddressModel";
+import IdentifierModel from "./IdentifierModel";
 
 class PatientModel extends Model {
   humanNames = []
   telecom = []
   addresses = []
+  identifiers = []
   constructor(fhirClient, resource) {
     super(fhirClient, resource);
     var tmp = this._getPath('name');
@@ -28,6 +30,12 @@ class PatientModel extends Model {
         return new AddressModel(element);
       })
     }
+    tmp = this._getPath('identifier');
+    if (tmp !== undefined) {
+      this.identifiers = tmp.map((element) => {
+        return new IdentifierModel(element);
+      })
+    }
   }
 
   getId() {
@@ -45,6 +53,10 @@ class PatientModel extends Model {
       text = `${familyName}, ${givenName} (${gender} ${age}y)`;
     }
     return text;
+  }
+
+  getAllIdentifiers() {
+    return this.identifiers;
   }
 
   getActive() {

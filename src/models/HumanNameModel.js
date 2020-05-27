@@ -1,5 +1,5 @@
-import CapitalizeFirstLetter from '../Helpers';
-import helperGetPeriod from '../Helpers';
+import {capitalizeFirstLetter} from '../Helpers';
+import {helperGetPeriod} from '../Helpers';
 class HumanNameModel {
   constructor(name) {
     this.name = name;
@@ -7,7 +7,7 @@ class HumanNameModel {
 
   getUse(capitalize=false) {
     if (capitalize) {
-      return CapitalizeFirstLetter(this.name.use);
+      return capitalizeFirstLetter(this.name.use);
     }
     return this.name.use;
   }

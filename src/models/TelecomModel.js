@@ -1,5 +1,4 @@
-import Model from "./Model";
-import helperGetPeriod from '../Helpers'
+import {helperGetPeriod} from '../Helpers'
 
 class TelecomModel {
   constructor(telecom) {
