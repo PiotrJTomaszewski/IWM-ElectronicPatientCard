@@ -7,6 +7,8 @@ import Col from 'react-bootstrap/Col';
 import PatientHeader from './PatientHeader';
 import PersonalInformation from './PersonalInformation/PersonalInformation';
 import TelecomInformation from './PersonalInformation/TelecomInformation';
+import AddressInformation from './PersonalInformation/AddressInformation';
+import DebugArea from './DebugArea';
 
 class PatientOverview extends React.Component {
   state = {
@@ -85,7 +87,11 @@ class PatientOverview extends React.Component {
             <Col>
               <TelecomInformation patient={this.state.patient}/>
             </Col>
+            <Col>
+              <AddressInformation patient={this.state.patient}/>
+            </Col>
           </Row>
+          <DebugArea patient={this.state.patient}/>
         </Container>
       );
   }

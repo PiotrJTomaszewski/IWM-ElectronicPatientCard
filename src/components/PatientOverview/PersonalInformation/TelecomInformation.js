@@ -14,6 +14,11 @@ class TelecomInformation extends React.Component {
         </tr>
       );
     } else {
+      if (telecom[0].getRank() !== undefined) {
+        telecom.sort((a, b) => {
+          return a.getRank() - b.getRank();
+        });
+      }
       return telecom.map((element) => {
         var use = {
           isClass: false,
@@ -76,7 +81,7 @@ class TelecomInformation extends React.Component {
             title += "fax number";
             break;
           case "email":
-            systemImgClass = "fas fa-envelope";
+            systemImgClass = "fas fa-at";
             title += "email address";
             break;
           case "pager":
@@ -97,7 +102,7 @@ class TelecomInformation extends React.Component {
             break;
         }
         var value = element.getValue();
-        var period = element.getPeriod(true, "Unknown");
+        var period = element.getPeriod(true, undefined);
         return (
           <tr key={key++} title={title}>
             {/* <td>

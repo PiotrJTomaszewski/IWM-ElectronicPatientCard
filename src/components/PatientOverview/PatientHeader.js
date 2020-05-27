@@ -1,5 +1,5 @@
 import React from 'react';
-
+import RawHtml from '../RawHtml';
 function PatientHeader(props) {
   var text = props.patient.getText();
   console.log(text);
@@ -8,13 +8,9 @@ function PatientHeader(props) {
   }
   return (
     <div className="display-2">
-        <div dangerouslySetInnerHTML={insertHtml(text)}></div>
+      <RawHtml>{text}</RawHtml>
     </div>
   )
-}
-
-function insertHtml(text) {
-  return {__html: text};
 }
 
 export default PatientHeader;

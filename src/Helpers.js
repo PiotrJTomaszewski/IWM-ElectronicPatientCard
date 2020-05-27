@@ -27,6 +27,3 @@ export function helperGetPeriod(
   return ifNotFound;
 }
 
-export function insertHtml(text) {
-  return {__html: text};
-}

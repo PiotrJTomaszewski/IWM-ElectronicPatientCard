@@ -2,10 +2,12 @@ import capitalizeFirstLetter from "../Helpers";
 import Model from "./Model";
 import HumanNameModel from './HumanNameModel';
 import TelecomModel from "./TelecomModel";
+import AddressModel from "./AddressModel";
 
 class PatientModel extends Model {
   humanNames = []
   telecom = []
+  addresses = []
   constructor(fhirClient, resource) {
     super(fhirClient, resource);
     var tmp = this._getPath('name');
@@ -18,6 +20,12 @@ class PatientModel extends Model {
     if (tmp !== undefined) {
       this.telecom = tmp.map((element) => {
         return new TelecomModel(element);
+      })
+    }
+    tmp = this._getPath('address');
+    if (tmp !== undefined) {
+      this.addresses = tmp.map((element) => {
+        return new AddressModel(element);
       })
     }
   }
@@ -153,6 +161,10 @@ class PatientModel extends Model {
 
   getAllTelecom() {
     return this.telecom;
+  }
+
+  getAllAddresses() {
+    return this.addresses;
   }
 }
 

@@ -6,7 +6,7 @@ class PatientName extends React.Component {
     var id = 0;
     return this.props.patient.getAllNames().map((name) => {
       return (
-        <tr key={id++}>
+        <tr key={'patientNameModal'+id++}>
           <td>{name.getUse(true)}</td>
           <td>{name.getFullName()}</td>
           <td>{name.getPeriod(true, "Unknown")}</td>
