@@ -4,12 +4,14 @@ import HumanNameModel from './HumanNameModel';
 import TelecomModel from "./TelecomModel";
 import AddressModel from "./AddressModel";
 import IdentifierModel from "./IdentifierModel";
+import ContactModel from "./ContactModel";
 
 class PatientModel extends Model {
-  humanNames = []
-  telecom = []
-  addresses = []
-  identifiers = []
+  humanNames = undefined
+  telecom = undefined
+  addresses = undefined
+  identifiers = undefined
+  contacts = undefined
   constructor(fhirClient, resource) {
     super(fhirClient, resource);
     var tmp = this._getPath('name');
@@ -35,6 +37,12 @@ class PatientModel extends Model {
       this.identifiers = tmp.map((element) => {
         return new IdentifierModel(element);
       })
+    }
+    tmp = this._getPath('contact');
+    if (tmp !== undefined) {
+      this.contacts = tmp.map((element) => {
+        return new ContactModel(element);
+      });
     }
   }
 
@@ -177,6 +185,10 @@ class PatientModel extends Model {
 
   getAllAddresses() {
     return this.addresses;
+  }
+
+  getAllContacts() {
+    return this.contacts;
   }
 }
 

@@ -81,7 +81,7 @@ class AddressModel {
 
   getShortAddress() {
     var use;
-    var title;
+    var title = '';
     switch (this.getUse()) {
       case "home":
         use = { isClass: true, text: "fas fa-home" };
@@ -104,7 +104,7 @@ class AddressModel {
         title = "Billing";
         break;
       default:
-        use = { isClass: false, text: "other" };
+        use = { isClass: false, text: "" };
         title = "Other";
         break;
     }
@@ -127,7 +127,7 @@ class AddressModel {
         title += "postal & physical";
         break;
       default:
-        type = { isClass: false, text: ["unknown"] };
+        type = { isClass: false, text: [""] };
         title += "unknown";
         break;
     }
@@ -166,23 +166,26 @@ class AddressModel {
     var postalCode = this.getPostalCode(undefined);
     var country = this.getCountry(undefined);
 
-    html = lines + "<br/>";
-    if (district !== undefined) {
-      html += district + "<br/>";
+    html = '<dl>'
+    if (lines !== undefined) {
+      html +=  '<dt>Address lines</dt><dd>' + lines + "</dd>";
     }
     if (city !== undefined) {
-      html += city + ", ";
+      html += '<dt>City</dt><dd>' + city + "</dd>";
+    }
+    if (district !== undefined) {
+      html += '<dt>District</dt><dd>' + district + "</dd>";
+    }
+    if (state !== undefined) {
+      html += '<dt>State</dt><dd>' + state + "</dd>";
     }
     if (postalCode !== undefined) {
-      html += postalCode;
-    }
-    html += "<br/>";
-    if (state !== undefined) {
-      html += state + "<br/>";
+      html += '<dt>Postal code</dt><dd>' + postalCode + '</dd>';
     }
     if (country !== undefined) {
-      html += country;
+      html += '<dt>Country</dt><dd>' + country + "</dd>";
     }
+    html += "</dl>"
     return html;
   }
 }

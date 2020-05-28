@@ -37,7 +37,7 @@ class AddressInformation extends React.Component {
   render() {
     return (
       <Card>
-        <Card.Title>
+        <Card.Title className="text-center mt-4">
           <span className="h2">Addressess</span>
         </Card.Title>
         <Card.Body>

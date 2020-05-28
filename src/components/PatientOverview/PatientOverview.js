@@ -9,6 +9,7 @@ import PersonalInformation from "./PersonalInformation/PersonalInformation";
 import TelecomInformation from "./PersonalInformation/TelecomInformation";
 import AddressInformation from "./PersonalInformation/AddressInformation";
 import IdentifiersList from "./IdentifiersList/IdentifiersList";
+import ContactList from "./ContactList/ContactList";
 import DebugArea from "./DebugArea";
 
 class PatientOverview extends React.Component {
@@ -100,6 +101,7 @@ class PatientOverview extends React.Component {
         </Container>
         <Container>
           <IdentifiersList patient={this.state.patient} />
+          <ContactList patient={this.state.patient} />
         </Container>
         <DebugArea patient={this.state.patient} />
       </Container>

@@ -32,6 +32,9 @@ class ModalWithButton extends React.Component {
   };
 
   render() {
+    /* Props:
+      tooltip, buttonText, modalTitle, modalBody
+    */
     // Animation in version 1.0.1 of react-bootstrap usues an deprecated method so it has to be turned off unitil the library is updated
     return (
       <div>

@@ -8,7 +8,6 @@ export function helperGetPeriod(
   asString = false,
   ifNotFound = undefined
 ) {
-  console.log("EJ" + period);
   if (period) {
     if (asString) {
       if (period.start && period.end) {
