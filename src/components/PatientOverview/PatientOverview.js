@@ -4,6 +4,7 @@ import Loading from "../Loading";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import PatientOverviewHeader from "./PatientOverviewHeader";
 import PatientHeader from "./PatientHeader";
 import PersonalInformation from "./PersonalInformation/PersonalInformation";
 import TelecomInformation from "./PersonalInformation/TelecomInformation";
@@ -82,29 +83,36 @@ class PatientOverview extends React.Component {
     }
     console.log(this.state.patient.getText());
     return (
-      <Container>
-        <Container>
-          <Row>
-            <PatientHeader patient={this.state.patient} />
-          </Row>
-          <Row>
-            <Col>
-              <PersonalInformation patient={this.state.patient} />
-            </Col>
-            <Col>
-              <TelecomInformation patient={this.state.patient} />
-            </Col>
-            <Col>
-              <AddressInformation patient={this.state.patient} />
-            </Col>
-          </Row>
-        </Container>
-        <Container>
-          <IdentifiersList patient={this.state.patient} />
-          <ContactList patient={this.state.patient} />
-        </Container>
-        <DebugArea patient={this.state.patient} />
-      </Container>
+      <div>
+        <header>
+          <nav><PatientOverviewHeader patient={this.state.patient}/></nav>
+        </header>
+        <main>
+          <Container>
+            <Container>
+              <Row>
+                <PatientHeader patient={this.state.patient} />
+              </Row>
+              <Row>
+                <Col>
+                  <PersonalInformation patient={this.state.patient} />
+                </Col>
+                <Col>
+                  <TelecomInformation patient={this.state.patient} />
+                </Col>
+                <Col>
+                  <AddressInformation patient={this.state.patient} />
+                </Col>
+              </Row>
+            </Container>
+            <Container>
+              <IdentifiersList patient={this.state.patient} />
+              <ContactList patient={this.state.patient} />
+            </Container>
+            <DebugArea patient={this.state.patient} />
+          </Container>
+        </main>
+      </div>
     );
   }
 }

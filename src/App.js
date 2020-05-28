@@ -1,7 +1,5 @@
 import React from "react";
 import "./App.css";
-import Header from "./components/Header";
-import Navbar from "./components/Navbar";
 import PatientsList from "./components/PatientsList/PatientsList";
 import PatientOverview from "./components/PatientOverview/PatientOverview";
 import Footer from "./components/Footer";
@@ -32,27 +30,17 @@ class App extends React.Component {
     };
     return (
       <div>
-        <header>
-          <Header />
-          <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-            <Navbar />
-          </nav>
-        </header>
-        <main>
-          <Container>
-            {this.state.selectedPatientId === undefined ? (
-              <PatientsList
-                client={this.fhirClient}
-                patientSelectedCallback={callback}
-              />
-            ) : (
-              <PatientOverview
-                client={this.fhirClient}
-                patientId={this.state.selectedPatientId}
-              />
-            )}
-          </Container>
-        </main>
+        {this.state.selectedPatientId === undefined ? (
+          <PatientsList
+            client={this.fhirClient}
+            patientSelectedCallback={callback}
+          />
+        ) : (
+          <PatientOverview
+            client={this.fhirClient}
+            patientId={this.state.selectedPatientId}
+          />
+        )}
         <footer>
           <Footer />
         </footer>
