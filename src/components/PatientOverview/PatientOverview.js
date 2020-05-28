@@ -1,17 +1,12 @@
 import React from "react";
+import Container from "react-bootstrap/Container";
+
 import Patient from "../../models/PatientModel";
 import Loading from "../Loading";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import PatientOverviewHeader from "./PatientOverviewHeader";
-import PatientHeader from "./PatientHeader";
-import PersonalInformation from "./PersonalInformation/PersonalInformation";
-import TelecomInformation from "./PersonalInformation/TelecomInformation";
-import AddressInformation from "./PersonalInformation/AddressInformation";
-import IdentifiersList from "./IdentifiersList/IdentifiersList";
-import ContactList from "./ContactList/ContactList";
+import PersonalInformationMain from "./PersonalInformation/PersonalInformationMain";
 import DebugArea from "./DebugArea";
+import PatientOverviewHeader from "./PatientOverviewHeader";
+import TimelineMain from "./Timeline/TimelineMain";
 
 class PatientOverview extends React.Component {
   state = {
@@ -19,6 +14,7 @@ class PatientOverview extends React.Component {
     patient: {},
     observations: {},
     medicationStatements: {},
+    selectedTab: 'tab-patient-overview',
   };
 
   constructor(props) {
@@ -42,6 +38,12 @@ class PatientOverview extends React.Component {
       };
     });
   }
+
+  tabSelectedHandler = (selectedKey) => {
+    this.setState((state) => {
+      return { ...state, selectedTab: selectedKey };
+    });
+  };
 
   onDownloadFail(whatFailed) {
     switch (whatFailed) {
@@ -81,36 +83,35 @@ class PatientOverview extends React.Component {
     if (this.state.loading) {
       return <Loading />;
     }
-    console.log(this.state.patient.getText());
+    var selectedPageComponent;
+    switch (this.state.selectedTab) {
+      case 'tab-patient-overview':
+        selectedPageComponent = (
+          <PersonalInformationMain patient={this.state.patient} />
+        );
+        break;
+      case 'tab-timeline':
+        selectedPageComponent = <TimelineMain patient={this.state.patient} />;
+        break;
+      case 'tab-debug':
+        selectedPageComponent = <DebugArea patient={this.state.patient} />;
+        break;
+      default:
+        console.log("Invalid tab selected" + this.state.selectedTab);
+        break;
+    }
     return (
       <div>
         <header>
-          <nav><PatientOverviewHeader patient={this.state.patient}/></nav>
+          <nav>
+            <PatientOverviewHeader
+              patient={this.state.patient}
+              onLinkClicked={this.tabSelectedHandler}
+            />
+          </nav>
         </header>
         <main>
-          <Container>
-            <Container>
-              <Row>
-                <PatientHeader patient={this.state.patient} />
-              </Row>
-              <Row>
-                <Col>
-                  <PersonalInformation patient={this.state.patient} />
-                </Col>
-                <Col>
-                  <TelecomInformation patient={this.state.patient} />
-                </Col>
-                <Col>
-                  <AddressInformation patient={this.state.patient} />
-                </Col>
-              </Row>
-            </Container>
-            <Container>
-              <IdentifiersList patient={this.state.patient} />
-              <ContactList patient={this.state.patient} />
-            </Container>
-            <DebugArea patient={this.state.patient} />
-          </Container>
+          <Container>{selectedPageComponent}</Container>
         </main>
       </div>
     );

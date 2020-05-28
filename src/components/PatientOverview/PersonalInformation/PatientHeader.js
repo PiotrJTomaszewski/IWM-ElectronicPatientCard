@@ -1,5 +1,5 @@
 import React from 'react';
-import RawHtml from '../RawHtml';
+import RawHtml from '../../RawHtml';
 function PatientHeader(props) {
   var text = props.patient.getText();
   console.log(text);

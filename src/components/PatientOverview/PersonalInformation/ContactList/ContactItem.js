@@ -1,7 +1,7 @@
 import React from "react";
-import ModalWithButton from "../ModalWithButton";
+import ModalWithButton from "../../ModalWithButton";
 import Table from "react-bootstrap/Table";
-import RawHtml from "../../RawHtml";
+import RawHtml from "../../../RawHtml";
 
 class ContactItem extends React.Component {
   render() {

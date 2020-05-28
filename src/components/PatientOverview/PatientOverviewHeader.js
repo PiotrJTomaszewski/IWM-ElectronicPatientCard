@@ -4,6 +4,7 @@ import Nav from "react-bootstrap/Nav";
 
 class PatientListHeader extends React.Component {
   onLinkClicked = (selectedKey) => {
+    this.props.onLinkClicked(selectedKey);
     console.log("Link clicked", selectedKey);
   };
 
@@ -14,9 +15,9 @@ class PatientListHeader extends React.Component {
           {this.props.patient.getMainName().getFullName()}
         </Navbar.Brand>
         <Nav className="mr-auto" onSelect={this.onLinkClicked}>
-          <Nav.Link eventKey="link-patient-overview">Patient overview</Nav.Link>
-          <Nav.Link eventKey="link-patient-timeline">Timeline</Nav.Link>
-          <Nav.Link eventKey="link-patient-sth">???</Nav.Link>
+          <Nav.Link eventKey="tab-patient-overview">Patient overview</Nav.Link>
+          <Nav.Link eventKey="tab-timeline">Timeline</Nav.Link>
+          <Nav.Link eventKey="tab-debug">Debug menu</Nav.Link>
         </Nav>
       </Navbar>
     );
