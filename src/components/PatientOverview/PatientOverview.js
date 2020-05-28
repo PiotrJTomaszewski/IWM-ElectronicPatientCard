@@ -1,7 +1,9 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
 
-import Patient from "../../models/PatientModel";
+import PatientModel from "../../models/PatientModel";
+import ObservationModel from "../../models/ObservationModel";
+import MedicationStatementModel from "../../models/MedicationStatementModel";
 import Loading from "../Loading";
 import PersonalInformationMain from "./PersonalInformation/PersonalInformationMain";
 import DebugArea from "./DebugArea";
@@ -24,17 +26,34 @@ class PatientOverview extends React.Component {
   }
 
   onDownloadSuccess() {
-    var patientModel = new Patient(
+    var patientModel = new PatientModel(
       this.fhirClient,
       this.fhirClient.getPatient()
     );
+    console.log("Patient loaded");
+    var observationsRaw = this.fhirClient.getObservations();
+    var observationModels;
+    if (observationsRaw && observationsRaw.length > 0) {
+      observationModels = observationsRaw.map((element) => {
+        return new ObservationModel(this.fhirClient, element);
+      })
+    }
+    console.log("Observations loaded");
+    var medicationStatementsRaw = this.fhirClient.getMedicationStatements();
+    var medicationStatementModels;
+    if (medicationStatementsRaw && medicationStatementsRaw.length > 0) {
+      medicationStatementModels = medicationStatementsRaw.map((element) => {
+        return new MedicationStatementModel(this.fhirClient, element);
+      })
+    }
+    console.log("Medical statements loaded");
     this.setState((state) => {
       return {
         ...state,
         loading: false,
         patient: patientModel,
-        // observations: this.fhirClient.getObservations(),
-        // medicationStatements: this.fhirClient.getMedicationStatements()
+        observations: observationModels,
+        medicationStatements: medicationStatementModels
       };
     });
   }
@@ -91,7 +110,7 @@ class PatientOverview extends React.Component {
         );
         break;
       case 'tab-timeline':
-        selectedPageComponent = <TimelineMain patient={this.state.patient} />;
+        selectedPageComponent = <TimelineMain observations={this.state.observations} medicationStatements={this.state.medicationStatements} />;
         break;
       case 'tab-debug':
         selectedPageComponent = <DebugArea patient={this.state.patient} />;
@@ -111,7 +130,7 @@ class PatientOverview extends React.Component {
           </nav>
         </header>
         <main>
-          <Container>{selectedPageComponent}</Container>
+          {selectedPageComponent}
         </main>
       </div>
     );

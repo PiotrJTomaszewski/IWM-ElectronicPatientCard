@@ -22,8 +22,15 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch in Chrome",
-            "url": "http://kpiotrvm:3000",
-            "webRoot": "${workspaceFolder}/src",
+            "url": "localhost:3000",
+            "webRoot": "${workspaceFolder}/../public",
+            "sourceMapPathOverrides": {
+                "webpack:///./*": "${workspaceFolder}/../*",
+                "webpack:///src/*": "${workspaceFolder}/../src/*",
+                "webpack:///*": "${workspaceFolder}/..*",
+                "webpack:///./~/*": "${workspaceFolder}/../node_modules/*",
+                "meteor://💻app/*": "${workspaceFolder}/../*"
+            }
         }
     ]
 }
