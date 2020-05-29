@@ -1,5 +1,4 @@
 import React from "react";
-import Container from "react-bootstrap/Container";
 
 import PatientModel from "../../models/PatientModel";
 import ObservationModel from "../../models/ObservationModel";
@@ -9,6 +8,7 @@ import PersonalInformationMain from "./PersonalInformation/PersonalInformationMa
 import DebugArea from "./DebugArea";
 import PatientOverviewHeader from "./PatientOverviewHeader";
 import TimelineMain from "./Timeline/TimelineMain";
+import GraphsMain from "./Graphs/GraphsMain";
 
 class PatientOverview extends React.Component {
   state = {
@@ -111,6 +111,9 @@ class PatientOverview extends React.Component {
         break;
       case 'tab-timeline':
         selectedPageComponent = <TimelineMain observations={this.state.observations} medicationStatements={this.state.medicationStatements} />;
+        break;
+      case 'tab-graphs':
+        selectedPageComponent = <GraphsMain observations={this.state.observations}/>;
         break;
       case 'tab-debug':
         selectedPageComponent = <DebugArea patient={this.state.patient} />;

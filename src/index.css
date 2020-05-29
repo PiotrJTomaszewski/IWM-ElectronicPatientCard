@@ -1,3 +1,4 @@
+@import "~react-vis/dist/style.css";
 .vertical-center {
     min-height: 100%;
     min-height: 100vh;

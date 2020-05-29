@@ -77,6 +77,18 @@ class ObservationModel extends Model {
       display: display,
     };
   }
+
+  getValue(ifNotFound=undefined) {
+    var value = this._getPath('valueQuantity');
+    if (value) {
+      return {
+        type: 'quantity',
+        value: value.value,
+        unit: value.unit
+      }
+    }
+    return ifNotFound; // TODO: Add other value types
+  }
 }
 
 export default ObservationModel;

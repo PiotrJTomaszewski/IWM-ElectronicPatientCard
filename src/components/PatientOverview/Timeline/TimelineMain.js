@@ -6,12 +6,20 @@ var Immutable = require("seamless-immutable");
 
 class TimelineMain extends React.Component {
   maxDate = new Date("2030-12-12");
+  state = {
+    dataReady: false,
+    groups: undefined,
+    items: undefined,
+  };
 
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
     this.groups = [
       { id: "groupMedicationsId", content: "Medications", nestedGroups: [] },
-      { id: "gruoupObservationsId", content: "Observations", nestedGroups: [] }
+      { id: "gruoupObservationsId", content: "Observations", nestedGroups: [] },
     ];
     this.items = [];
     this.fillMedicationGroups();
@@ -26,6 +34,14 @@ class TimelineMain extends React.Component {
     // );
     this.immutableGroups = Immutable(this.groups);
     this.immutableItems = Immutable(this.items);
+    this.setState((state) => {
+      return {
+        ...state,
+        dataReady: true,
+        groups: this.immutableGroups,
+        items: this.immutableItems,
+      };
+    });
   }
 
   fillMedicationGroups() {
@@ -103,20 +119,18 @@ class TimelineMain extends React.Component {
     // var groups = Immutable(this.getMedicationGroups());
     // var items = Immutable(this.getMedicationItems());
     var timelineOptions = Immutable({});
-    console.log(
-      this.immutableGroups,
-      this.immutableItems,
-      this.timelineOptions
-    );
-    return (
-      <div>
-        <TimelineComponent
-          options={timelineOptions}
-          groups={this.immutableGroups}
-          items={this.immutableItems}
-        />
-      </div>
-    );
+    if (this.state.dataReady) {
+      return (
+        <div>
+          <TimelineComponent
+            options={timelineOptions}
+            groups={this.state.groups}
+            items={this.state.items}
+          />
+        </div>
+      );
+    }
+    return <div></div>;
   }
 }
 

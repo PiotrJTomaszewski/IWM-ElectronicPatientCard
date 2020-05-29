@@ -18,7 +18,8 @@
     "@fortawesome/fontawesome-free": "5.13.0",
     "vis-timeline": "7.3.6",
     "react-visjs-timeline": "1.6.0",
-    "seamless-immutable": "7.1.4"
+    "seamless-immutable": "7.1.4",
+    "react-vis": "1.11.7"
   },
   "scripts": {
     "start": "react-scripts start",
