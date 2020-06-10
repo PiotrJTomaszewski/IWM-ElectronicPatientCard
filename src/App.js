@@ -24,6 +24,12 @@ class App extends React.Component {
     }
   }
 
+  backToPatientListCallback = () => {
+    this.setState({
+      selectedPatientId: undefined
+    });
+  }
+
   render() {
     var callback = (patientId) => {
       this.patientSelectedCallback(patientId);
@@ -39,6 +45,7 @@ class App extends React.Component {
           <PatientOverview
             client={this.fhirClient}
             patientId={this.state.selectedPatientId}
+            backToListCallback={this.backToPatientListCallback}
           />
         )}
         <footer>

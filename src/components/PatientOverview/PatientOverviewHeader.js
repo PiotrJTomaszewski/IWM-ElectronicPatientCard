@@ -5,12 +5,14 @@ import Nav from "react-bootstrap/Nav";
 class PatientListHeader extends React.Component {
   onLinkClicked = (selectedKey) => {
     this.props.onLinkClicked(selectedKey);
-    console.log("Link clicked", selectedKey);
   };
 
   render() {
     return (
       <Navbar bg="dark" variant="dark">
+        <Nav onSelect={this.onLinkClicked}>
+          <Nav.Link eventKey="tab-back-to-list"><i className="fas fa-arrow-left"></i></Nav.Link>
+        </Nav>
         <Navbar.Brand>
           {this.props.patient.getMainName().getFullName()}
         </Navbar.Brand>

@@ -13,6 +13,7 @@ import GraphsMain from "./Graphs/GraphsMain";
 class PatientOverview extends React.Component {
   state = {
     loading: true,
+    patientId: undefined,
     patient: {},
     observations: {},
     medicationStatements: {},
@@ -20,9 +21,10 @@ class PatientOverview extends React.Component {
   };
 
   constructor(props) {
-    super();
+    super(props);
     this.fhirClient = props.client;
-    this.patientId = props.patientId;
+    this.state.patientId = props.patientId;
+
   }
 
   onDownloadSuccess() {
@@ -88,7 +90,7 @@ class PatientOverview extends React.Component {
 
   componentDidMount() {
     this.fhirClient.downloadPatientData(
-      this.props.patientId,
+      this.state.patientId,
       () => {
         this.onDownloadSuccess();
       },
@@ -104,6 +106,9 @@ class PatientOverview extends React.Component {
     }
     var selectedPageComponent;
     switch (this.state.selectedTab) {
+      case 'tab-back-to-list':
+        this.props.backToListCallback();
+        break;
       case 'tab-patient-overview':
         selectedPageComponent = (
           <PersonalInformationMain patient={this.state.patient} />

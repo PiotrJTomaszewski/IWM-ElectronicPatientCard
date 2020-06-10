@@ -1,7 +1,5 @@
 import React from "react";
-import Container from "react-bootstrap/Container";
 import TimelineComponent from "./TimelineComponent";
-import RawHtml from "../../RawHtml";
 var Immutable = require("seamless-immutable");
 
 class TimelineMain extends React.Component {
@@ -14,9 +12,6 @@ class TimelineMain extends React.Component {
 
   constructor(props) {
     super(props);
-  }
-
-  componentDidMount() {
     this.groups = [
       { id: "groupMedicationsId", content: "Medications", nestedGroups: [] },
       { id: "gruoupObservationsId", content: "Observations", nestedGroups: [] },
@@ -34,15 +29,14 @@ class TimelineMain extends React.Component {
     // );
     this.immutableGroups = Immutable(this.groups);
     this.immutableItems = Immutable(this.items);
-    this.setState((state) => {
-      return {
-        ...state,
-        dataReady: true,
-        groups: this.immutableGroups,
-        items: this.immutableItems,
-      };
-    });
+    this.state = {
+      dataReady: true,
+      groups: this.immutableGroups,
+      items: this.immutableItems,
+    };
   }
+
+  componentDidMount() {}
 
   fillMedicationGroups() {
     var medicationStatemets = this.props.medicationStatements;
@@ -61,6 +55,25 @@ class TimelineMain extends React.Component {
     }
   }
 
+  getStatementModalBody(statement) {
+    const effectivePeriod = statement.getEffectivePeriod(true, "Unknown");
+    const reason = statement.getReasonCodeText("Unkown");
+    const status = statement.getStatus("Unknown");
+    const dosage = statement.getDosage("Unknown");
+    return (
+      <dl>
+        <dt>Reason</dt>
+        <dd>{reason}</dd>
+        <dt>Dosage</dt>
+        <dd>{dosage.text} | {dosage.routeText} | {dosage.asNeeded}</dd>
+        <dt>Effective Period</dt>
+        <dd>{effectivePeriod}</dd>
+        <dt>Status</dt>
+        <dd>{status}</dd>
+      </dl>
+    );
+  }
+
   fillMedicationItems() {
     this.props.medicationStatements.map((statement) => {
       var period = statement.getEffectivePeriod(false, undefined);
@@ -75,10 +88,16 @@ class TimelineMain extends React.Component {
       }
       this.items.push({
         id: statement.getId(),
-        group: statement.getMedicationReference("Unknown").reference,
-        content: statement.getText("Unknown"),
-        start: start_time,
-        end: end_time,
+        modalTitle: "e",
+        modalHeader: "NIC",
+        modalBody: this.getStatementModalBody(statement),
+        item: {
+          id: statement.getId(),
+          group: statement.getMedicationReference("Unknown").reference,
+          content: statement.getText("Unknown"),
+          start: start_time,
+          end: end_time,
+        },
       });
     });
   }
@@ -100,15 +119,40 @@ class TimelineMain extends React.Component {
     }
   }
 
+  getObservationModalBody(observation) {
+    const status = observation.getStatus('Unknown');
+    const category = observation.getCategory('Unknown');
+    const effectiveDateTime = observation.getEffectiveDateTime('Unknown');
+    const code = observation.getCode('Unknown').display;
+    return (
+      <dl>
+        <dt>Status</dt>
+        <dd>{status}</dd>
+        <dt>Category</dt>
+        <dd>{category}</dd>
+        <dt>Effective DateTime</dt>
+        <dd>{effectiveDateTime}</dd>
+        <dt>Code</dt>
+        <dd>{code}</dd>
+      </dl>
+    );
+  }
+
   fillObservationItems() {
     this.props.observations.map((observation) => {
       var datetime = new Date(observation.getEffectiveDateTime(undefined));
       this.items.push({
         id: observation.getId(),
-        group: observation.getCode("Unknown").code,
-        content: observation.getText("Unknown"),
-        start: datetime,
-        type: "point",
+        modalTitle: "e",
+        modalHeader: "NIC",
+        modalBody: this.getObservationModalBody(observation),
+        item: {
+          id: observation.getId(),
+          group: observation.getCode("Unknown").code,
+          content: observation.getText("Unknown"),
+          start: datetime,
+          type: "point",
+        },
       });
     });
   }

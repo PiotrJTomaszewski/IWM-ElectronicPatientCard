@@ -37,7 +37,6 @@ class FhirClient {
       .request(`Patient/${patientId}/$everything`, {
         pageLimit: 0,
         flat: true,
-        resolveReferences: ["Medication"],
         graph: true
       })
       .then((entries) => {

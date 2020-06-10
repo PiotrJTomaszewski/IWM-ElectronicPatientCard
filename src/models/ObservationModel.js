@@ -17,7 +17,7 @@ class ObservationModel extends Model {
   }
 
   getId() {
-    return this._getPath('id');
+    return this._getPath("id");
   }
 
   getAllIdentifiers(ifNotFound = undefined) {
@@ -78,16 +78,24 @@ class ObservationModel extends Model {
     };
   }
 
-  getValue(ifNotFound=undefined) {
-    var value = this._getPath('valueQuantity');
+  getValue(ifNotFound = undefined) {
+    var value = this._getPath("valueQuantity");
     if (value) {
       return {
-        type: 'quantity',
+        type: "quantity",
         value: value.value,
-        unit: value.unit
-      }
+        unit: value.unit,
+      };
     }
     return ifNotFound; // TODO: Add other value types
+  }
+
+  getCategory(ifNotFound = undefined) {
+    var category = this._getPath("category.0.coding.0.display");
+    if (!category) {
+      category = this._getPath("category.0.coding.0.code");
+    }
+    return category ? category : ifNotFound;
   }
 }
 
