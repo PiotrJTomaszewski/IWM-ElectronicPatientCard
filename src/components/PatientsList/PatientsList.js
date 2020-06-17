@@ -1,5 +1,4 @@
 import React from "react";
-import Patient from "../../models/PatientModel";
 import PatientsListItem from "./PatientsListItem";
 import Loading from "../Loading";
 import Table from "react-bootstrap/Table";
@@ -9,92 +8,100 @@ import $ from "jquery";
 import PatientListHeader from "./PatientListHeader";
 
 class PatientsList extends React.Component {
-  patients = [];
-  state = {
-    loading: true,
-    patientsToDisplay: [],
-  };
-  fhirClient = {};
-
   constructor(props) {
     super();
-    this.fhirClient = props.client;
+    this.state = {
+      fhirClient: props.client,
+      dataDownloaded: false,
+      patients: [],
+      patientsToDisplay: [],
+    };
+  }
+
+  componentDidUpdate(oldProps) {
+    if (oldProps.fhirClient !== this.props.fhirClient) {
+      this.setState((state) => {
+        return {
+          ...state,
+          fhirClient: this.props.fhirClient,
+        };
+      });
+    }
   }
 
   onDownloadSuccess() {
-    this.patients = this.fhirClient.getPatientsList().map((resource) => {
-      var patient = new Patient(this.fhirClient, resource);
+    console.log(this.state.fhirClient.patientList);
+    var patients = this.state.fhirClient.patientList.map((patientModel) => {
       return {
-        id: patient.getId(),
-        familyName: patient.getMainName().getFamilyName(),
-        display: (
+        id: patientModel.id,
+        familyName: patientModel.names[0].family,
+        component: (
           <PatientsListItem
-            key={patient.getId()}
-            patient={patient}
+            key={patientModel.id}
+            patient={patientModel}
             patientSelectedCallback={this.props.patientSelectedCallback}
           />
         ),
       };
     });
+    var patientsComponents = patients.map((patient) => {
+      return patient.component;
+    });
     this.setState((state) => {
       return {
         ...state,
-        loading: false,
-        patientsToDisplay: this.patients.map((patient) => {
-          return patient.display;
-        }),
+        dataDownloaded: true,
+        patients: patients,
+        patientsToDisplay: patientsComponents
       };
     });
   }
 
-  onDownloadFail() {
-    console.log("No patients found");
+  onDownloadFail(error) {
+    console.log("Error while fetching patient data ", error);
   }
 
   componentDidMount() {
-    this.fhirClient.downloadPatientsList(
+    this.state.fhirClient.fetchPatientsList(
       () => {
         this.onDownloadSuccess();
       },
-      () => {
-        this.onDownloadFail();
+      (error) => {
+        this.onDownloadFail(error);
       }
     );
   }
 
   filterNames() {
+    console.log('filter');
     var currentFilter = $("#filter-box").val().toLowerCase();
-    var filteredDisplay = [];
-    this.patients.forEach((patient) => {
-      if (patient.familyName.toLowerCase().indexOf(currentFilter) > -1) {
-        filteredDisplay.push(patient.display);
-      }
-    });
+    var filteredComponents = this.state.patients
+      .filter((patient) => {
+        return patient.familyName.toLowerCase().indexOf(currentFilter) > -1;
+      })
+      .map((patient) => patient.component);
     this.setState((state) => {
       return {
         ...state,
-        patientsToDisplay: filteredDisplay,
+        patientsToDisplay: filteredComponents,
       };
     });
   }
 
   render() {
-    var filterNamesCallback = () => {
-      this.filterNames();
-    };
-    if (this.state.loading) {
-      return <Loading />;
-    } else {
+    if (this.state.dataDownloaded) {
       return (
         <div>
           <header>
-            <nav><PatientListHeader/></nav>
+            <nav>
+              <PatientListHeader />
+            </nav>
           </header>
           <main>
             <Container>
               <div className="md-form m-4">
                 <input
-                  onKeyUp={filterNamesCallback}
+                  onKeyUp={() => {this.filterNames()}}
                   id="filter-box"
                   className="form-control"
                   type="text"
@@ -109,7 +116,6 @@ class PatientsList extends React.Component {
                     <th>Given name(s)</th>
                     <th>Gender</th>
                     <th>Date of birth</th>
-                    <th>Status</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -119,6 +125,8 @@ class PatientsList extends React.Component {
           </main>
         </div>
       );
+    } else {
+      return <Loading />;
     }
   }
 }

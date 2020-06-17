@@ -19,7 +19,9 @@
     "vis-timeline": "7.3.6",
     "react-visjs-timeline": "1.6.0",
     "seamless-immutable": "7.1.4",
-    "react-vis": "1.11.7"
+    "react-vis": "1.11.7",
+    "react-leaflet": "2.7.0",
+    "leaflet": "1.6.0"
   },
   "scripts": {
     "start": "react-scripts start",

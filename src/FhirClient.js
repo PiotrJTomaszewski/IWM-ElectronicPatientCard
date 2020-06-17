@@ -1,122 +1,94 @@
-import FHIR from "fhirclient";
+import PatientModel from "./models/PatientModel";
+import ObservationModel from "./models/ObservationModel";
+import MedicationRequestModel from "./models/MedicationRequestModel";
 
-class FhirClient {
-  patientsList = {}
-  patientData = {
-    patient: {},
-    observation: {},
-    medicationStatement: {}
-  }
-  constructor(baseApiUrl) {
-    this.client = FHIR.client(baseApiUrl);
-  }
+export default class FhirClient {
+  API_URL = "http://192.168.100.130:8080/baseR4/";
 
-  downloadPatientsList(onSuccess, onFailure) {
-    this.client
-      .request("Patient", {
-        pageLimit: 0,
-        flat: true,
-      })
-      .then((entries) => {
-        this.patientsList = entries;
-        if (entries && entries.length > 0) {
-          onSuccess();
-        } else {
-          onFailure();
+  fetchPatientsListNextPage(url, onSuccess, onFailure) {
+    fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      this.patientList = this.patientList.concat(data.entry.map((entry) => new PatientModel(entry.resource)));
+      var nextUrl = undefined;
+      if (data.link && data.link.length > 0) {
+        for (let i = 0; i < data.link.length; i++) {
+          if (data.link[i].relation === "next") {
+            nextUrl = data.link[i].url;
+            break;
+          }
         }
-      });
+      }
+      if (nextUrl !== undefined) {
+        this.fetchPatientsListNextPage(nextUrl, onSuccess, onFailure);
+      } else {
+        console.log(data)
+        onSuccess();
+      }
+    })
+    .catch((error) => {
+      onFailure(error);
+    })
   }
 
-  downloadPatientData(patientId, onSuccess, onFailure) {
-    // this._downloadEveryPatientData(patientId, onSuccess, onFailure);
-    this._downloadNecessarryPatientData(patientId, onSuccess, onFailure);
-  }
-
-  _downloadEveryPatientData(patientId, onSuccess, onFailure) {
-    this.client
-      .request(`Patient/${patientId}/$everything`, {
-        pageLimit: 0,
-        flat: true,
-        graph: true
+  fetchPatientDataNextPage(url, onSuccess, onFailure) {
+    fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      data.entry.forEach((entry) => {
+      switch(entry.resource.resourceType) {
+        case 'Patient':
+          this.patientData.patient = new PatientModel(entry.resource);
+          break;
+        case 'Observation':
+          this.patientData.observations.push(new ObservationModel(entry.resource));
+          break;
+        case 'MedicationRequest':
+          this.patientData.medicationRequests.push(new MedicationRequestModel(entry.resource));
+          break;
+        default:
+          break;
+      }
       })
-      .then((entries) => {
-        // TODO: Save data
-        if (entries && entries.length > 0) {
-          onSuccess();
-        } else {
-          onFailure();
+
+
+      var nextUrl = undefined;
+      if (data.link && data.link.length > 0) {
+        for (let i = 0; i < data.link.length; i++) {
+          if (data.link[i].relation === "next") {
+            nextUrl = data.link[i].url;
+            break;
+          }
         }
-      }).catch(() =>{
-        // It seems that this operation isn't supported on most of the publicly available servers (most likely due to the high resource consumption)
-        onFailure('everything');
-        this._downloadNecessarryPatientData(patientId, onSuccess, onFailure);
-    });
+      }
+      if (nextUrl !== undefined) {
+        this.fetchPatientDataNextPage(nextUrl, onSuccess, onFailure);
+      } else {
+        onSuccess();
+      }
+    })
+    .catch((error) => {
+      onFailure(error);
+    })
   }
 
-  _downloadNecessarryPatientData(patientId, onSuccess, onFailure) {
-    var leftToDownload = 3;
-    this.client
-      .request(`Patient/${patientId}`, {
-        pageLimit: 0,
-        flat: true,
-        graph: true
-      })
-      .then((data) => {
-        this.patientData.patient = data;
-        leftToDownload--;
-        if (leftToDownload === 0) {
-          onSuccess();
-        }
-      })
-      .catch(() => {onFailure('patient')});
-    this.client
-      .request(`Observation?patient=${patientId}`, {
-        pageLimit: 0,
-        flat: true
-      })
-      .then((data) => {
-        this.patientData.observation = data;
-        leftToDownload--;
-        if (leftToDownload === 0) {
-          onSuccess();
-        }
-      })
-      .catch(() => {onFailure('observation')});
-    this.client
-      .request(`MedicationStatement?patient=${patientId}`, {
-        pageLimit: 0,
-        flat: true,
-        resolveReferences: ["medication"],
-        graph: true
-      })
-      .then((data) => {
-        this.patientData.medicationStatement = data;
-        leftToDownload--;
-        if (leftToDownload === 0) {
-          onSuccess();
-        }
-      })
-      .catch(() => {onFailure('medicationStatement')});
+
+
+  fetchPatientsList(onSuccess, onFailure) {
+    this.patientList = [];
+    const url = `${this.API_URL}Patient?&_count=50&_format=json`;
+    this.fetchPatientsListNextPage(url, onSuccess, onFailure);
   }
 
-  getPatientsList() {
-    return this.patientsList;
-  }
+  fetchPatientData(patientId, onSuccess, onFailure) {
+    this.patientData = {
+      patient: {},
+      observations: [],
+      medicationRequests: [],
+      encounters: [],
 
-  getPatient() {
-    return this.patientData.patient;
-  }
-
-  getObservations() {
-    return this.patientData.observation;
-  }
-
-  getMedicationStatements() {
-    return this.patientData.medicationStatement;
-  }
-
-  getPath(object, path) {
-    return this.client.getPath(object, path);
+    };
+    const url = `${this.API_URL}Patient/${patientId}/$everything?_count=50&_format=json`;
+    this.fetchPatientDataNextPage(url, onSuccess, onFailure);
   }
 }
-export default FhirClient;

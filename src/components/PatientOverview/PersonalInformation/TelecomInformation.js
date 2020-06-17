@@ -1,11 +1,11 @@
 import React from "react";
 import Table from "react-bootstrap/Table";
 import Card from "react-bootstrap/Card";
-import insertHtml from "../../../Helpers";
 
 class TelecomInformation extends React.Component {
   createList = () => {
-    var telecom = this.props.patient.getAllTelecom();
+    var patient = this.props.fhirClient.patientData.patient;
+    var telecom = patient.telecoms;
     if (telecom === undefined || telecom.length === 0) {
       return (
         <tr>
@@ -13,11 +13,11 @@ class TelecomInformation extends React.Component {
         </tr>
       );
     } else {
-      if (telecom[0].getRank() !== undefined) {
-        telecom.sort((a, b) => {
-          return a.getRank() - b.getRank();
-        });
-      }
+      // if (telecom[0].getRank() !== undefined) {
+      //   telecom.sort((a, b) => {
+      //     return a.getRank() - b.getRank();
+      //   });
+      // }
       var key = 0;
       return telecom.map((element) => {
         return element.getHtml('PatientTelecom'+key++);

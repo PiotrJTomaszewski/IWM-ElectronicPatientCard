@@ -1,26 +1,16 @@
 import React from "react";
 
+import { capitalizeFirstLetter } from "../../Helpers";
+
 function PatientsListItem(props) {
-  var patientId = props.patient.getId();
-  switch (props.patient.getActive()) {
-    case true:
-      var active = "Active";
-      break;
-    case false:
-      var active = "Inactive";
-      break;
-    default:
-      var active = "Unspecified";
-      break;
-  }
+  var patientId = props.patient.id;
   var mainName = props.patient.getMainName();
   return (
     <tr>
-      <td>{mainName.getFamilyName()}</td>
-      <td>{mainName.getGivenName(true)}</td>
-      <td>{props.patient.getGender(true)}</td>
-      <td>{props.patient.getBirthdate()}</td>
-      <td>{active}</td>
+      <td>{mainName.family}</td>
+      <td>{mainName.getJoinedGiven()}</td>
+      <td>{capitalizeFirstLetter(props.patient.gender)}</td>
+      <td>{props.patient.birthDate}</td>
       <td>
         <button
           type="button"

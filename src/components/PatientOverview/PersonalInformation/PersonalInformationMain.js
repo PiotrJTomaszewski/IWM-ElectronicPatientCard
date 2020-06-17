@@ -8,31 +8,44 @@ import TelecomInformation from "./TelecomInformation";
 import AddressInformation from "./AddressInformation";
 import PatientHeader from "./PatientHeader";
 import IdentifiersList from "./IdentifiersList/IdentifiersList";
-import ContactList from "./ContactList/ContactList";
+// import ContactList from "./ContactList/ContactList";
 
 class PersonalInformationMain extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fhirClient: props.fhirClient
+    }
+  }
+
+  componentDidUpdate(oldProps) {
+    if (this.props.fhirClient !== oldProps.fhirClient) {
+      this.setState({
+        fhirClient: this.props.fhirClient
+      })
+    }
+  }
+
   render() {
     return (
       <Container>
         <Container>
           <Row>
-            <PatientHeader patient={this.props.patient} />
+            <PatientHeader fhirClient={this.state.fhirClient} />
           </Row>
           <Row>
             <Col>
-              <PersonalInformation patient={this.props.patient} />
+              <PersonalInformation fhirClient={this.state.fhirClient} />
             </Col>
             <Col>
-              <TelecomInformation patient={this.props.patient} />
-            </Col>
-            <Col>
-              <AddressInformation patient={this.props.patient} />
+              <TelecomInformation fhirClient={this.state.fhirClient} />
+              <AddressInformation fhirClient={this.state.fhirClient} />
             </Col>
           </Row>
         </Container>
         <Container>
-          <IdentifiersList patient={this.props.patient} />
-          <ContactList patient={this.props.patient} />
+          <IdentifiersList fhirClient={this.state.fhirClient} />
+          {/* <ContactList patient={this.props.patient} /> */}
         </Container>
       </Container>
     );

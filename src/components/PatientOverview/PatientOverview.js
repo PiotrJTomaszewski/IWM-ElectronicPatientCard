@@ -1,8 +1,5 @@
 import React from "react";
 
-import PatientModel from "../../models/PatientModel";
-import ObservationModel from "../../models/ObservationModel";
-import MedicationStatementModel from "../../models/MedicationStatementModel";
 import Loading from "../Loading";
 import PersonalInformationMain from "./PersonalInformation/PersonalInformationMain";
 import DebugArea from "./DebugArea";
@@ -11,53 +8,56 @@ import TimelineMain from "./Timeline/TimelineMain";
 import GraphsMain from "./Graphs/GraphsMain";
 
 class PatientOverview extends React.Component {
-  state = {
-    loading: true,
-    patientId: undefined,
-    patient: {},
-    observations: {},
-    medicationStatements: {},
-    selectedTab: 'tab-patient-overview',
-  };
-
   constructor(props) {
     super(props);
-    this.fhirClient = props.client;
-    this.state.patientId = props.patientId;
-
+    this.state = {
+      dataDownloaded: false,
+      patientId: props.patientId,
+      fhirClient: props.client,
+      selectedTab: "tab-patient-overview",
+    };
   }
 
   onDownloadSuccess() {
-    var patientModel = new PatientModel(
-      this.fhirClient,
-      this.fhirClient.getPatient()
-    );
-    console.log("Patient loaded");
-    var observationsRaw = this.fhirClient.getObservations();
-    var observationModels;
-    if (observationsRaw && observationsRaw.length > 0) {
-      observationModels = observationsRaw.map((element) => {
-        return new ObservationModel(this.fhirClient, element);
-      })
-    }
-    console.log("Observations loaded");
-    var medicationStatementsRaw = this.fhirClient.getMedicationStatements();
-    var medicationStatementModels;
-    if (medicationStatementsRaw && medicationStatementsRaw.length > 0) {
-      medicationStatementModels = medicationStatementsRaw.map((element) => {
-        return new MedicationStatementModel(this.fhirClient, element);
-      })
-    }
-    console.log("Medical statements loaded");
     this.setState((state) => {
       return {
         ...state,
-        loading: false,
-        patient: patientModel,
-        observations: observationModels,
-        medicationStatements: medicationStatementModels
-      };
-    });
+        dataDownloaded: true
+      }
+    })
+  }
+
+  onDownloadFailure(error) {
+    console.log("Error while downloading data ", error);
+  }
+
+  downloadPatientData() {
+    this.state.fhirClient.fetchPatientData(
+      this.state.patientId,
+      () => {
+        this.onDownloadSuccess();
+      },
+      (error) => {
+        this.onDownloadFailure(error);
+      }
+    );
+  }
+
+  componentDidUpdate(oldProps) {
+    if (oldProps.patientId !== this.props.patientId) {
+      this.setState((state) => {
+        return {
+          ...state,
+          patientId: this.props.patientId,
+          dataDownloaded: false
+        };
+      });
+      this.downloadPatientData();
+    }
+  }
+
+  componentDidMount() {
+    this.downloadPatientData();
   }
 
   tabSelectedHandler = (selectedKey) => {
@@ -66,82 +66,61 @@ class PatientOverview extends React.Component {
     });
   };
 
-  onDownloadFail(whatFailed) {
-    switch (whatFailed) {
-      case "everything":
-        console.log(
-          "Getting all of the patient data failed (Most likely, this operation isn't supported by the server). Trying downloading only necessarry information."
-        );
-        break;
-      case "patient":
-        console.log("Patient not found");
-        break;
-      case "observation":
-        console.log("No observation found");
-        break;
-      case "medicationStatement":
-        console.log("No medication statement found");
-        break;
-      default:
-        console.log("Other error?!");
-        break;
-    }
-  }
-
-  componentDidMount() {
-    this.fhirClient.downloadPatientData(
-      this.state.patientId,
-      () => {
-        this.onDownloadSuccess();
-      },
-      (whatFailed) => {
-        this.onDownloadFail(whatFailed);
-      }
-    );
-  }
-
-  render() {
-    if (this.state.loading) {
-      return <Loading />;
-    }
+  getSelectedPageComponent() {
     var selectedPageComponent;
     switch (this.state.selectedTab) {
-      case 'tab-back-to-list':
+      case "tab-back-to-list":
         this.props.backToListCallback();
         break;
-      case 'tab-patient-overview':
+      case "tab-patient-overview":
         selectedPageComponent = (
-          <PersonalInformationMain patient={this.state.patient} />
+          <PersonalInformationMain fhirClient={this.state.fhirClient} />
         );
         break;
-      case 'tab-timeline':
-        selectedPageComponent = <TimelineMain observations={this.state.observations} medicationStatements={this.state.medicationStatements} />;
+      case "tab-timeline":
+        selectedPageComponent = (
+          <div></div>
+          // <TimelineMain
+          //   observations={this.state.observations}
+          //   medicationStatements={this.state.medicationStatements}
+          // />
+        );
         break;
-      case 'tab-graphs':
-        selectedPageComponent = <GraphsMain observations={this.state.observations}/>;
+      case "tab-graphs":
+        selectedPageComponent = (
+          <div></div>
+          // <GraphsMain observations={this.state.observations} />
+        );
         break;
-      case 'tab-debug':
-        selectedPageComponent = <DebugArea patient={this.state.patient} />;
+      case "tab-debug":
+        selectedPageComponent = (<div></div>)
+        // selectedPageComponent = <DebugArea patient={this.state.patient} />;
         break;
       default:
         console.log("Invalid tab selected" + this.state.selectedTab);
         break;
     }
-    return (
-      <div>
-        <header>
-          <nav>
-            <PatientOverviewHeader
-              patient={this.state.patient}
-              onLinkClicked={this.tabSelectedHandler}
-            />
-          </nav>
-        </header>
-        <main>
-          {selectedPageComponent}
-        </main>
-      </div>
-    );
+    return selectedPageComponent;
+  }
+
+  render() {
+    if (this.state.dataDownloaded) {
+      return (
+        <div>
+          <header>
+            <nav>
+              <PatientOverviewHeader
+                patient={this.state.fhirClient.patientData.patient}
+                onLinkClicked={this.tabSelectedHandler}
+              />
+            </nav>
+          </header>
+          <main>{this.getSelectedPageComponent()}</main>
+        </div>
+      );
+    } else {
+      return <Loading />;
+    }
   }
 }
 

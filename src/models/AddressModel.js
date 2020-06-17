@@ -1,193 +1,72 @@
-import React from "react";
-import {helperGetPeriod} from "../Helpers";
+import Model from "./Model";
 
-class AddressModel {
-  constructor(address) {
-    this.address = address;
+export default class AddressModel extends Model {
+  constructor(resource) {
+    super();
+    this.city = this._getPath(resource, "city");
+    this.country = this._getPath(resource, "country");
+    this.latLong = {};
+    this.setExtensions(resource);
+    this.lines = this._getPath(resource, "line");
+    this.postalCode = this._getPath(resource, "postalCode");
+    this.state = this._getPath(resource, "state");
   }
 
-  getUse(ifNotFound = undefined) {
-    if (this.address.use === undefined) {
-      return ifNotFound;
+  setExtensions(resource) {
+    var extensions = this._getPath(resource, "extension");
+    if (extensions !== undefined && extensions.length > 0) {
+      extensions.forEach((element) => {
+        const url = this._getPath(element, "url");
+        if (url !== undefined) {
+          switch (url) {
+            case "http://hl7.org/fhir/StructureDefinition/geolocation":
+              if (this._getPath(element, "extension") && element.extension.length > 0) {
+                element.extension.forEach((latlong) => {
+                  if (latlong.url === "latitude") {
+                    this.latLong.latitude = latlong.valueDecimal;
+                  } else if (latlong.url === "longitude") {
+                    this.latLong.longitude = latlong.valueDecimal;
+                  }
+                });
+              }
+              break;
+            default:
+              console.log("Unkown Address extension URL ", url);
+              break;
+          }
+        }
+      });
     }
-    return this.address.use;
-  }
-
-  getType(ifNotFound = undefined) {
-    if (this.address.type === undefined) {
-      return ifNotFound;
-    }
-    return this.address.type;
-  }
-
-  getText(ifNotFound = undefined) {
-    if (this.address.text === undefined) {
-      return ifNotFound;
-    }
-    return this.address.text;
-  }
-
-  getLines(
-    ifNotFound = undefined,
-    concatenate = {boolean: false, concWith: " " }
-  ) {
-    if (this.address.line === undefined || this.address.line.length === 0) {
-      return ifNotFound;
-    }
-    if (concatenate.boolean) {
-      return this.address.line.join(concatenate.concWith);
-    }
-    return this.address.line;
-  }
-
-  getCity(ifNotFound = undefined) {
-    if (this.address.city === undefined) {
-      return ifNotFound;
-    }
-    return this.address.city;
-  }
-
-  getDistrict(ifNotFound = undefined) {
-    if (this.address.district === undefined) {
-      return ifNotFound;
-    }
-    return this.address.city;
-  }
-
-  getState(ifNotFound = undefined) {
-    if (this.address.state === undefined) {
-      return ifNotFound;
-    }
-    return this.address.state;
-  }
-
-  getPostalCode(ifNotFound = undefined) {
-    if (this.address.postalCode === undefined) {
-      return ifNotFound;
-    }
-    return this.address.postalCode;
-  }
-
-  getCountry(ifNotFound = undefined) {
-    if (this.address.country === undefined) {
-      return ifNotFound;
-    }
-    return this.address.country;
-  }
-
-  getPeriod(asString = false, ifNotFound = undefined) {
-    return helperGetPeriod(this.address.period, asString, ifNotFound);
   }
 
   getShortAddress() {
-    var use;
-    var title = '';
-    switch (this.getUse()) {
-      case "home":
-        use = { isClass: true, text: "fas fa-home" };
-        title = "Home";
-        break;
-      case "work":
-        use = { isClass: true, text: "fas fa-briefcase" };
-        title = "Work";
-        break;
-      case "temp":
-        use = { isClass: false, text: "temp" };
-        title = "Temporary";
-        break;
-      case "old":
-        use = { isClass: false, text: "old" };
-        title = "Old";
-        break;
-      case "billing":
-        use = { isClass: true, text: "fas fa-dollar-sign" };
-        title = "Billing";
-        break;
-      default:
-        use = { isClass: false, text: "" };
-        title = "Other";
-        break;
-    }
-    title += " ";
-    var type;
-    switch (this.getType()) {
-      case "postal":
-        type = { isClass: true, text: ["fas fa-mail-bulk"] };
-        title += "postal";
-        break;
-      case "physical":
-        type = { isClass: true, text: ["fas fa-building"] };
-        title += "physical";
-        break;
-      case "both":
-        type = {
-          isClass: true,
-          text: ["fas fa-mail-bulk", "fas fa-building"],
-        };
-        title += "postal & physical";
-        break;
-      default:
-        type = { isClass: false, text: [""] };
-        title += "unknown";
-        break;
-    }
-    title += " address";
-    var text =
-      this.getLines("", { boolean: true, concWith: " " }) +
-      ", " +
-      this.getCity("");
-    return {
-      title: title,
-      html: (
-        <div>
-          {use.isClass ? <i className={use.text}></i> : use.text}{" "}
-          {type.isClass ? <i className={type.text[0]}></i> : type.text[0]}{" "}
-          {type.text.length === 2 ? (
-            <i className={type.text[1]}></i>
-          ) : undefined}{" "}
-          {text} {this.getPeriod(true, undefined)}
-        </div>
-      ),
-    };
+    return `${this.city} (${this.state})`
   }
 
   getFullAddressHtml() {
-    var html = this.getText();
-    if (html !== undefined) {
-      return (html);
-    }
-    var lines = this.getLines(undefined, {
-      boolean: true,
-      concWith: "<br/>",
-    });
-    var city = this.getCity(undefined);
-    var district = this.getDistrict(undefined);
-    var state = this.getState(undefined);
-    var postalCode = this.getPostalCode(undefined);
-    var country = this.getCountry(undefined);
-
-    html = '<dl>'
-    if (lines !== undefined) {
+    // var district = this.getDistrict(undefined);
+    var html = '<dl>'
+    if (this.lines !== undefined) {
+      var lines = this.lines.join("<br/>")
       html +=  '<dt>Address lines</dt><dd>' + lines + "</dd>";
     }
-    if (city !== undefined) {
-      html += '<dt>City</dt><dd>' + city + "</dd>";
+    if (this.city !== undefined) {
+      html += '<dt>City</dt><dd>' + this.city + "</dd>";
     }
-    if (district !== undefined) {
-      html += '<dt>District</dt><dd>' + district + "</dd>";
+    // if (district !== undefined) {
+    //   html += '<dt>District</dt><dd>' + district + "</dd>";
+    // }
+    if (this.state !== undefined) {
+      html += '<dt>State</dt><dd>' + this.state + "</dd>";
     }
-    if (state !== undefined) {
-      html += '<dt>State</dt><dd>' + state + "</dd>";
+    if (this.postalCode !== undefined) {
+      html += '<dt>Postal code</dt><dd>' + this.postalCode + '</dd>';
     }
-    if (postalCode !== undefined) {
-      html += '<dt>Postal code</dt><dd>' + postalCode + '</dd>';
-    }
-    if (country !== undefined) {
-      html += '<dt>Country</dt><dd>' + country + "</dd>";
+    if (this.country !== undefined) {
+      html += '<dt>Country</dt><dd>' + this.country + "</dd>";
     }
     html += "</dl>"
     return html;
   }
-}
 
-export default AddressModel;
+}

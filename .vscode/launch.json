@@ -23,14 +23,17 @@
             "request": "launch",
             "name": "Launch in Chrome",
             "url": "localhost:3000",
-            "webRoot": "${workspaceFolder}/../public",
-            "sourceMapPathOverrides": {
-                "webpack:///./*": "${workspaceFolder}/../*",
-                "webpack:///src/*": "${workspaceFolder}/../src/*",
-                "webpack:///*": "${workspaceFolder}/..*",
-                "webpack:///./~/*": "${workspaceFolder}/../node_modules/*",
-                "meteor://💻app/*": "${workspaceFolder}/../*"
-            }
+            "webRoot": "${workspaceFolder}/",
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/src/index.js",
+            "trace": true
         }
     ]
 }

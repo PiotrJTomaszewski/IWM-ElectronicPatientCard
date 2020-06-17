@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 
-class PatientListHeader extends React.Component {
+class PatientOverviewHeader extends React.Component {
   onLinkClicked = (selectedKey) => {
     this.props.onLinkClicked(selectedKey);
   };
@@ -14,7 +14,7 @@ class PatientListHeader extends React.Component {
           <Nav.Link eventKey="tab-back-to-list"><i className="fas fa-arrow-left"></i></Nav.Link>
         </Nav>
         <Navbar.Brand>
-          {this.props.patient.getMainName().getFullName()}
+          {this.props.patient ? this.props.patient.getMainName().getFullName(): ""}
         </Navbar.Brand>
         <Nav className="mr-auto" onSelect={this.onLinkClicked}>
           <Nav.Link eventKey="tab-patient-overview">Patient overview</Nav.Link>
@@ -27,4 +27,4 @@ class PatientListHeader extends React.Component {
   }
 }
 
-export default PatientListHeader;
+export default PatientOverviewHeader;

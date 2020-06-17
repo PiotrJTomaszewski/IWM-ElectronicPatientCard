@@ -4,16 +4,15 @@ import PatientsList from "./components/PatientsList/PatientsList";
 import PatientOverview from "./components/PatientOverview/PatientOverview";
 import Footer from "./components/Footer";
 import FhirClient from "./FhirClient";
-import Container from "react-bootstrap/Container";
 
 class App extends React.Component {
-  state = {
-    selectedPatientId: undefined,
-  };
 
   constructor() {
     super();
-    this.fhirClient = new FhirClient("http://demo.oridashi.com.au:8304");
+    this.state = {
+      dataDownloaded: false,
+      fhirClient: new FhirClient()
+    }
   }
 
   patientSelectedCallback(patientId) {
@@ -26,9 +25,9 @@ class App extends React.Component {
 
   backToPatientListCallback = () => {
     this.setState({
-      selectedPatientId: undefined
+      selectedPatientId: undefined,
     });
-  }
+  };
 
   render() {
     var callback = (patientId) => {
@@ -38,12 +37,12 @@ class App extends React.Component {
       <div>
         {this.state.selectedPatientId === undefined ? (
           <PatientsList
-            client={this.fhirClient}
+            client={this.state.fhirClient}
             patientSelectedCallback={callback}
           />
         ) : (
           <PatientOverview
-            client={this.fhirClient}
+            client={this.state.fhirClient}
             patientId={this.state.selectedPatientId}
             backToListCallback={this.backToPatientListCallback}
           />

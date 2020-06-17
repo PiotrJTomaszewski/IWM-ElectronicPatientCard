@@ -1,0 +1,10 @@
+.map {
+    height: 400px;
+    width: 400px;
+    align-self: center;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
