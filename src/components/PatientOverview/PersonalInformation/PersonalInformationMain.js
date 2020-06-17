@@ -30,7 +30,7 @@ class PersonalInformationMain extends React.Component {
     return (
       <Container>
         <Container>
-          <Row>
+          <Row className="m-4">
             <PatientHeader fhirClient={this.state.fhirClient} />
           </Row>
           <Row>

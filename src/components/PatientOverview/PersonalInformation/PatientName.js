@@ -11,7 +11,11 @@ class PatientName extends React.Component {
       return (
         <tr key={'patientNameModal'+id++}>
           <td>{capitalizeFirstLetter(name.use)}</td>
-          <td>{name.getFullName()}</td>
+          <td>{name.prefix ? name.prefix.join(" ") : ""}</td>
+          <td>{name.given ? name.given.join(" ") : ""}</td>
+          <td>{name.family}</td>
+          <td>{name.suffix ? name.suffix.join(" ") : ""}</td>
+
         </tr>
       );
     });
@@ -29,7 +33,10 @@ class PatientName extends React.Component {
         modalTableHeaderRow={
           <tr>
             <th scope="row">Use</th>
-            <th scope="row">Name</th>
+            <th scope="row">Prefix</th>
+            <th scope="row">Given</th>
+            <th scope="row">Family</th>
+            <th scope="row">Suffix</th>
           </tr>
         }
         modalTableBody={this.getAllNames()}

@@ -79,7 +79,7 @@ export default class PatientModel extends Model {
     // Patient text in Synthea is garbage
     // var text = this._getPath(`text.div`);
     var mainName = this.getMainName();
-    return `${mainName.family}, ${mainName.given[0]} (${capitalizeFirstLetter(this.gender)} ${this.getAge()}y)`;
+    return `${mainName.family}, ${mainName.given[0]}<br/> (${capitalizeFirstLetter(this.gender)} ${this.getAge()}y)`;
   }
 
   getPatientExtension(extType) {

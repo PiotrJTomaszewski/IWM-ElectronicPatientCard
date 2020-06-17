@@ -78,8 +78,8 @@ class GraphComponent extends React.Component {
           data={this.state.data.coords}
           // onNearestX={this.onNearestX}
         />
-        <XAxis tickLabelAngle={-90} />
-        <YAxis />
+        <XAxis tickLabelAngle={-90}/>
+        <YAxis title={`[${this.state.data.unitY}]`}/>
         <Highlight onBrushEnd={this.onBrushEnd} onDrag={this.onDrag} />
         {/* <Crosshair values={this.state.crosshairValues} /> */}
       </XYPlot>
