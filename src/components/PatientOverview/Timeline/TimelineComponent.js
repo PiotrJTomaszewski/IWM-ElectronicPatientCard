@@ -3,6 +3,8 @@ import Timeline from "react-visjs-timeline";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
+import "./Timeline.css";
+
 class TimelineComponent extends React.Component {
   state = {
     modalsShown: [],
@@ -65,7 +67,7 @@ class TimelineComponent extends React.Component {
   }
 
   modalHideHandle = (event) => {
-    if (event.target === undefined) return;
+    if (!event || !event.target) return;
     var newModalsShown = this.state.modalsShown;
     newModalsShown[event.target.dataset["id"]] = false;
     this.setState((state) => {
@@ -78,6 +80,7 @@ class TimelineComponent extends React.Component {
   };
 
   clickHandler = (event) => {
+    console.log(event)
     const item_id = event.item;
     if (item_id) {
       this.setState((state) => {

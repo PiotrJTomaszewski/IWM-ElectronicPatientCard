@@ -9,7 +9,10 @@ export default class ValueQuantityModel extends Model {
         this.value = this._getPath(resource, "value");
     }
 
-    toText() {
-        return this.value + this.unit;
+    toText(roundNumbers=false) {
+        if (roundNumbers) {
+            return `${parseFloat(this.value).toFixed(3)} ${this.unit}`;
+        }
+        return `${this.value} ${this.unit}`;
     }
 }

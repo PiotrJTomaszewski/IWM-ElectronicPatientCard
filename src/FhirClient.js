@@ -61,7 +61,7 @@ export default class FhirClient {
       if (nextUrl !== undefined) {
         this.fetchPatientDataNextPage(nextUrl, onSuccess, onFailure);
       } else {
-        console.log(this.patientData);
+        console.log(this.patientData)
         onSuccess();
       }
     })

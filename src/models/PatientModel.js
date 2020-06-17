@@ -46,6 +46,8 @@ export default class PatientModel extends Model {
     if (commTmp !== undefined) {
       this.communication = commTmp.map((entry) => new CommunicationModel(entry));
     }
+    this.deceasedBoolean = this._getPath(resource, "deceasedBoolean");
+    this.deceasedDateTime = this._getPath(resource, "deceasedDateTime");
   }
 
   getMainName() {

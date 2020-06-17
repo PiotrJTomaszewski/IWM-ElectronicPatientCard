@@ -54,7 +54,6 @@ function PersonalInformation(props) {
       );
   }
 
-  // var deceasedText = <span>{props.patient.getDeceased(true, "Unknown")}</span>;
   return (
     <Card>
       <Card.Title className="text-center mt-4">
@@ -79,10 +78,10 @@ function PersonalInformation(props) {
               <th scope="col">Birth date</th>
               <td>{patient.birthDate}</td>
             </tr>
-            {/* <tr>
+            <tr>
               <th scope="col">Deceased</th>
-              <td></td>
-            </tr> */}
+              <td>{patient.deceasedDateTime ? `Yes, ${new Date(patient.deceasedDateTime).toLocaleString("en-US")}`: (patient.deceasedBoolean === false ? "No" : "Unspecified")}</td>
+            </tr>
             <tr>
               <th scope="col">Part of a multiple birth</th>
               <td>{capitalizeFirstLetter(patient.multipleBirthBoolean.toString())}</td>

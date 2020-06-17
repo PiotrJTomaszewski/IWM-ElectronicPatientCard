@@ -1,11 +1,15 @@
 @import "~react-vis/dist/style.css";
 .vertical-center {
-    min-height: 100%;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
+  min-height: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
 
 .test {
   width: 100%;
+}
+
+.less-important-item {
+  font-weight: 500;
 }

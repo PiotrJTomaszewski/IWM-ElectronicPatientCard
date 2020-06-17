@@ -1,0 +1,23 @@
+.vis-time-axis {
+  bottom: 0px !important;
+  top: auto !important;
+  position: fixed !important;
+  background-color: #fff;
+  z-index: 0;
+}
+
+.vis-left {
+  background-color: #fff;
+}
+
+.vis-labelset .vis-label .vis-inner {
+  max-width: 20vh;
+}
+
+.vis-inner {
+  padding-left: 0px !important;
+}
+
+nav {
+  z-index: 10;
+}

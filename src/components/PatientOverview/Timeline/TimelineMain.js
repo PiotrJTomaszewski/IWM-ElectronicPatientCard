@@ -2,6 +2,7 @@ import React from "react";
 import TimelineComponent from "./TimelineComponent";
 import Loading from "../../Loading";
 import {capitalizeFirstLetter} from "../../../Helpers";
+import RawHtml from "../../RawHtml";
 
 var Immutable = require("seamless-immutable");
 
@@ -52,7 +53,7 @@ class TimelineMain extends React.Component {
     for (request of medicationRequests) {
       var medicationCode = request.medicationCodeableConcept;
       if (medicationCodes.indexOf(medicationCode.coding.code) === -1) {
-        medicationRequests.push(medicationCode.coding.code);
+        medicationCodes.push(medicationCode.coding.code);
         this.groups.push({
           id: medicationCode.coding.code,
           content: request.toText(),
@@ -63,29 +64,24 @@ class TimelineMain extends React.Component {
   }
 
   getRequestModalBody(request) {
-    const dosage = request.dosageInstrucions.map((dosage) => {
-      return `<strong>Sequence:</strong> ${dosage.sequence} <strong>As Needed:</strong> ${capitalizeFirstLetter(dosage.asNeededBoolean.toString())}`}
-    ).join("<br/>");
     return (
       <dl>
-        <dt>Intent</dt>
-        <dd>{request.intent}</dd>
-        <dt>Dosage</dt>
-        <dd>dosage</dd>
-        <dt>AuthoredOn</dt>
+        <dt>Authored on</dt>
         <dd>{new Date(request.authoredOn).toLocaleString("en-US")}</dd>
+        <dt>Intent</dt>
+        <dd>{capitalizeFirstLetter(request.intent)}</dd>
+        <dt>Dosage</dt>
+        <dd><RawHtml>{request.getDosageHtml()}</RawHtml></dd>
         <dt>Status</dt>
         <dd>{request.status}</dd>
         <dt>Requester</dt>
         <dd>{request.requester}</dd>
-        <dt>Medication</dt>
-        <dd>{request.toText()}</dd>
       </dl>
     );
   }
 
   fillMedicationItems() {
-    this.props.fhirClient.patientData.medicationRequests.map((request) => {
+    this.props.fhirClient.patientData.medicationRequests.forEach((request) => {
       var authoredOnDate = new Date(request.authoredOn);
       // var start_time = new Date();
       // var end_time = this.maxDate;
@@ -98,8 +94,8 @@ class TimelineMain extends React.Component {
       // }
       this.items.push({
         id: request.id,
-        modalTitle: "e",
-        modalHeader: "NIC",
+        modalTitle: request.toText(),
+        modalHeader: "",
         modalBody: this.getRequestModalBody(request),
         item: {
           id: request.id,
@@ -136,15 +132,17 @@ class TimelineMain extends React.Component {
         <dt>Status</dt>
         <dd>{observation.status}</dd>
         <dt>Issued</dt>
-        <dd>{new Date(observation.issued).toLocaleString("en-US")}</dd>
+        <dd>{observation.issued ? new Date(observation.issued).toLocaleString("en-US") : ""}</dd>
+        <dt>Effective Date Time</dt>
+        <dd>{observation.effectiveDateTime ? new Date(observation.effectiveDateTime).toLocaleString("en-US") : ""}</dd>
         <dt>Value</dt>
-        <dd>{observation.getValueText()}</dd>
+        <dd>{observation.getValueText(false)}</dd>
       </dl>
     );
   }
 
   fillObservationItems() {
-    this.props.fhirClient.patientData.observations.map((observation) => {
+    this.props.fhirClient.patientData.observations.forEach((observation) => {
       var datetime = new Date(observation.issued);
       this.items.push({
         id: observation.id,
@@ -154,7 +152,7 @@ class TimelineMain extends React.Component {
         item: {
           id: observation.id,
           group: observation.code.coding.code,
-          content: observation.code.text,
+          content: observation.getValueText(true),
           start: datetime,
           type: "point",
         },
@@ -163,6 +161,7 @@ class TimelineMain extends React.Component {
   }
 
   render() {
+    // var timelineOptions = Immutable({orientation: {axis: 'both'}});
     var timelineOptions = Immutable({});
     if (this.state.dataReady) {
       return (
