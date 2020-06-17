@@ -1,171 +1,173 @@
 import React from "react";
 import Form from "react-bootstrap/Form";
 import FormCheck from "react-bootstrap/FormCheck";
-import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 import GraphComponent from "./GraphComponent";
+import GraphDateRangeComponent from "./GraphDateRangeComponent";
+import ObservationModel from "../../../models/ObservationModel";
 
 class GraphsMain extends React.Component {
   state = {
     dataReady: false,
+    radioButtons: {},
+    interestingData: {},
     graphDrawn: false,
-    dataToPlot: {}
-  };
-
-  selectedDataType = undefined;
-
-  data = {
-    wasAnyDataFound: false,
-    height: { title: "Height", coords: [], unitY: "" },
-    weight: { title: "Weight", coords: [], unitY: "" },
-    respirationRate: { title: "Respiration Rate", coords: [], unitY: "" },
+    selectedDataType: undefined,
+    dataToPlot: {},
+    dateRange: null,
   };
 
   constructor(props) {
     super(props);
   }
 
-  componentDidMount() {
-    if (this.props.observations && this.props.observations.length > 0) {
-      // Height - 8302-2
-      // Weight - 29463-7
-      // Respiration rate - 9279-1
-      // Blood pressure (sitting)
-      // Blood pressure (standing)
-      // Temperature
-      // Heart rate
-      var observation;
-      for (observation of this.props.observations) {
-        var code = observation.getCode().code;
-        var value = observation.getValue();
-        var dateTime = observation.getEffectiveDateTime();
-        if (value && value.type === "quantity" && dateTime) {
-          dateTime = new Date(dateTime);
-          console.log(value, dateTime);
-          switch (code) {
-            case "8302-2": // Height
-              this.data.wasAnyDataFound = true;
-              this.data.height.coords.push({ x: dateTime, y: value.value });
-              this.data.height.unitX = value.unit;
-              break;
-            case "29463-7": // Weight
-              this.data.wasAnyDataFound = true;
-              this.data.weight.coords.push({ x: dateTime, y: value.value });
-              this.data.weight.unitX = value.unit;
-              break;
-            case "9279-1": // Respiration rate
-              this.data.wasAnyDataFound = true;
-              this.data.respirationRate.coords.push({
-                x: dateTime,
-                y: value.value,
-              });
-              this.data.respirationRate.unitX = value.unit;
-              break;
-            default:
-              break;
-          }
-        }
-      }
+  getDataTypeOptions(codes) {
+    var options = [];
+    for (var c in codes) {
+      var code = codes[c];
+      options.push(
+        <option key={"DT" + code.coding.code} value={code.coding.code}>
+          {code.text}
+        </option>
+      );
     }
-    this.setState((state) => {
-      return {
-        ...state,
-        dataReady: true,
-      };
-    });
+    return options;
   }
 
-  selectedDataTypeHandler = (event) => {
-    switch (event.target.id) {
-      case "heightOption":
-        this.selectedDataType = 'height';
-        break;
-      case "weightOption":
-        this.selectedDataType = 'weight';
-        break;
-      case "respirationRateOption":
-        this.selectedDataType = 'respirationRate';
-        break;
-      default:
-        break;
-    }
-  };
-
-  onSubmitClick = () => {
-    if (this.selectedDataType) {
-      var selectedData;
-      switch(this.selectedDataType) {
-        case 'height': selectedData = this.data.height; break;
-        case 'weight': selectedData = this.data.weight; break;
-        case 'respirationRate': selectedData = this.data.respirationRate; break;
-        default: break;
-      }
-      selectedData.coords.sort((a,b)=>{
-        return a.x.getTime()-b.x.getTime();
+  componentDidMount() {
+    var observations = this.props.fhirClient.patientData.observations;
+    if (observations && observations.length > 0) {
+      var interestingData = observations.filter((obs) => {
+        return obs.valueType === ObservationModel.valueType["valueQuantity"];
       });
+      var codes = {};
+      interestingData.forEach((data) => {
+        codes[data.code.coding.code] = data.code;
+      });
+      var options = this.getDataTypeOptions(codes);
       this.setState((state) => {
         return {
           ...state,
+          dataTypeOptions: options,
+          interestingData: interestingData,
           dataReady: true,
-          graphDrawn: true,
-          dataToPlot: selectedData
         };
       });
     }
+  }
+
+  selectedDataTypeHandler = (event) => {
+    var selectedDataType;
+    if (event.target) {
+      selectedDataType = event.target.value;
+      if (selectedDataType) {
+        var selectedData = this.state.interestingData.filter((data) => {
+          return data.code.coding.code === selectedDataType;
+        });
+        var graphData = {
+          unitY: selectedData[0].valueQuantity.unit,
+          coords: [],
+        };
+        for (var data of selectedData) {
+          graphData.coords.push({
+            x: new Date(data.issued),
+            y: data.valueQuantity.value,
+          });
+        }
+        graphData.coords.sort((a, b) => {
+          return a.x.getTime() - b.x.getTime();
+        });
+
+        var dateRange = [
+          graphData.coords[0].x,
+          graphData.coords[graphData.coords.length - 1].x,
+        ];
+
+        this.setState((state) => {
+          return {
+            ...state,
+            renderPlot: true,
+            dataToPlot: graphData,
+            dateRange: dateRange,
+            defaultDateRange: dateRange,
+            selectedDataType: selectedDataType,
+          };
+        });
+      }
+    }
+  };
+
+  dateRangeComponentOnChange = (newDateRange) => {
+    console.log(newDateRange);
+    this.setState((oldState) => {
+      return {
+        dateRange: newDateRange ? newDateRange : oldState.defaultDateRange,
+      };
+    });
+  };
+
+  dateRangeGraphOnChange = (newDateRange) => {
+    console.log(newDateRange);
+    var left = newDateRange[0];
+    var right = newDateRange[1];
+
+    this.setState((oldState) => {
+      return {
+        dateRange: [
+          left ? left : oldState.defaultDateRange[0],
+          right ? right : oldState.defaultDateRange[1],
+        ],
+      };
+    });
   };
 
   render() {
     if (this.state.dataReady) {
-      if (this.data.wasAnyDataFound) {
-        return (
-          <Container>
-            <Form>
-              <Form.Group controlId="dataType" />
-              <Form.Label>Select data type to visualize</Form.Label>
-              <div onChange={this.selectedDataTypeHandler.bind(this)}>
-                {this.data.height.coords.length > 0 ? (
-                  <FormCheck
-                    type="radio"
-                    label="Height"
-                    id="heightOption"
-                    name="dataType"
-                  />
-                ) : null}
-                {this.data.weight.coords.length > 0 ? (
-                  <FormCheck
-                    type="radio"
-                    label="Weight"
-                    id="weightOption"
-                    name="dataType"
-                  />
-                ) : null}
-                {this.data.respirationRate.coords.length > 0 ? (
-                  <FormCheck
-                    type="radio"
-                    label="Respiration Rate"
-                    id="respirationRateOption"
-                    name="dataType"
-                  />
-                ) : null}
-              </div>
-              <Button type="button" onClick={this.onSubmitClick}>
-                Draw Graph
-              </Button>
-            </Form>
-            {this.state.graphDrawn ? (
-              <GraphComponent data={this.state.dataToPlot} />
-            ) : null}
-          </Container>
-        );
-      }
       return (
+        <Container>
+          <Form>
+            <Form.Group controlId="dataType" />
+            <Form.Label>
+              <div className="display-2">Select parameter to visualize</div>
+            </Form.Label>
+            <Form.Control
+              as="select"
+              id="dataTypeSelection"
+              onChange={this.selectedDataTypeHandler.bind(this)}
+              value={this.state.selectedDataType}
+            >
+              <option value="">Select data type</option>
+              {this.state.dataTypeOptions}
+            </Form.Control>
+          </Form>
+
+          {this.state.renderPlot ? (
+            <div className="graph-container">
+              <GraphComponent
+                data={this.state.dataToPlot}
+                dateRange={this.state.dateRange}
+                parentOnRangeChange={this.dateRangeGraphOnChange}
+              />
+              <GraphDateRangeComponent
+                dateRange={this.state.dateRange}
+                minMaxDateRange={this.state.defaultDateRange}
+                parentOnChange={this.dateRangeComponentOnChange}
+              />
+            </div>
+          ) : null}
+        </Container>
+      );
+    }
+    return (
+      <div>
         <span className="display-2">
           Sorry, there is no supported data available
         </span>
-      );
-    }
-    return <div></div>;
+      </div>
+    );
   }
 }
 

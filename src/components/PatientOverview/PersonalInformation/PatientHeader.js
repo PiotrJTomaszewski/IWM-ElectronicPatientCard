@@ -8,7 +8,7 @@ function PatientHeader(props) {
     text = "Unspecified";
   }
   return (
-    <div className="display-2">
+    <div className="display-2 m-3">
       <RawHtml>{text}</RawHtml>
     </div>
   )

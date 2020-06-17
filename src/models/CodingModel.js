@@ -8,7 +8,7 @@ export default class CodingModel extends Model {
         this.system = this._getPath(resource, "coding.0.system");
     }
 
-    toString() {
+    toText() {
         return this.display;
     }
 }

@@ -22,7 +22,6 @@ export default class FhirClient {
       if (nextUrl !== undefined) {
         this.fetchPatientsListNextPage(nextUrl, onSuccess, onFailure);
       } else {
-        console.log(data)
         onSuccess();
       }
     })
@@ -50,8 +49,6 @@ export default class FhirClient {
           break;
       }
       })
-
-
       var nextUrl = undefined;
       if (data.link && data.link.length > 0) {
         for (let i = 0; i < data.link.length; i++) {
@@ -64,6 +61,7 @@ export default class FhirClient {
       if (nextUrl !== undefined) {
         this.fetchPatientDataNextPage(nextUrl, onSuccess, onFailure);
       } else {
+        console.log(this.patientData);
         onSuccess();
       }
     })
@@ -85,8 +83,6 @@ export default class FhirClient {
       patient: {},
       observations: [],
       medicationRequests: [],
-      encounters: [],
-
     };
     const url = `${this.API_URL}Patient/${patientId}/$everything?_count=50&_format=json`;
     this.fetchPatientDataNextPage(url, onSuccess, onFailure);

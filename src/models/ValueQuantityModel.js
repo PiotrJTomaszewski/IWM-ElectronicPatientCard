@@ -9,7 +9,7 @@ export default class ValueQuantityModel extends Model {
         this.value = this._getPath(resource, "value");
     }
 
-    toString() {
+    toText() {
         return this.value + this.unit;
     }
 }

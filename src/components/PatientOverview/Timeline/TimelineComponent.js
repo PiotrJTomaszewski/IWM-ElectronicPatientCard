@@ -65,6 +65,7 @@ class TimelineComponent extends React.Component {
   }
 
   modalHideHandle = (event) => {
+    if (event.target === undefined) return;
     var newModalsShown = this.state.modalsShown;
     newModalsShown[event.target.dataset["id"]] = false;
     this.setState((state) => {

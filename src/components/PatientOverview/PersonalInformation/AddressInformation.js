@@ -30,7 +30,6 @@ class AddressInformation extends React.Component {
           address.latLong.latitude,
           address.latLong.longitude,
         ];
-        console.log(position);
         map = (
           <Map center={position} zoom={13} className="map">
             <TileLayer

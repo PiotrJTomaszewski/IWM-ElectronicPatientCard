@@ -22,8 +22,11 @@ export default class MedicationRequestModel extends Model {
     this.status = this._getPath(resource, "status");
   }
 
-  toString() {
+  toText() {
+    if (this.medicationCodeableConcept.text !== undefined) {
       return this.medicationCodeableConcept.text
+    }
+    return this.medicationCodeableConcept.coding.display;
   }
 
 }

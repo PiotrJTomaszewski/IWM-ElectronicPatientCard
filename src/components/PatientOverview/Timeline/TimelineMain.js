@@ -1,6 +1,10 @@
 import React from "react";
 import TimelineComponent from "./TimelineComponent";
+import Loading from "../../Loading";
+import {capitalizeFirstLetter} from "../../../Helpers";
+
 var Immutable = require("seamless-immutable");
+
 
 class TimelineMain extends React.Component {
   maxDate = new Date("2030-12-12");
@@ -17,139 +21,140 @@ class TimelineMain extends React.Component {
       { id: "gruoupObservationsId", content: "Observations", nestedGroups: [] },
     ];
     this.items = [];
-    this.fillMedicationGroups();
-    this.fillMedicationItems();
-    this.fillObservationGroups();
-    this.fillObservationItems();
-    // this.groups = Immutable(
-    //   this.getMedicationGroups().concat(this.getObservationGroups())
-    // );
-    // this.items = Immutable(
-    //   this.getMedicationItems().concat(this.getObservationItems())
-    // );
-    this.immutableGroups = Immutable(this.groups);
-    this.immutableItems = Immutable(this.items);
     this.state = {
-      dataReady: true,
+      dataReady: false,
       groups: this.immutableGroups,
       items: this.immutableItems,
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.items = []
+    this.fillObservationGroups();
+    this.fillObservationItems();
+    this.fillMedicationGroups();
+    this.fillMedicationItems();
+    this.immutableGroups = Immutable(this.groups);
+    this.immutableItems = Immutable(this.items);
+    this.setState((state)=>{
+      return {
+        dataReady: true,
+        groups: this.immutableGroups,
+        items: this.immutableItems
+      }
+    })
+  }
 
   fillMedicationGroups() {
-    var medicationStatemets = this.props.medicationStatements;
-    var medicationReferences = [];
-    var statement;
-    for (statement of medicationStatemets) {
-      var reference = statement.getMedicationReference("Unknown");
-      if (medicationReferences.indexOf(reference.reference) === -1) {
-        medicationReferences.push(reference.reference);
+    var medicationRequests = this.props.fhirClient.patientData.medicationRequests;
+    var medicationCodes = [];
+    var request;
+    for (request of medicationRequests) {
+      var medicationCode = request.medicationCodeableConcept;
+      if (medicationCodes.indexOf(medicationCode.coding.code) === -1) {
+        medicationRequests.push(medicationCode.coding.code);
         this.groups.push({
-          id: reference.reference,
-          content: reference.display,
+          id: medicationCode.coding.code,
+          content: request.toText(),
         });
-        this.groups[0].nestedGroups.push(reference.reference);
+        this.groups[0].nestedGroups.push(medicationCode.coding.code);
       }
     }
   }
 
-  getStatementModalBody(statement) {
-    const effectivePeriod = statement.getEffectivePeriod(true, "Unknown");
-    const reason = statement.getReasonCodeText("Unkown");
-    const status = statement.getStatus("Unknown");
-    const dosage = statement.getDosage("Unknown");
+  getRequestModalBody(request) {
+    const dosage = request.dosageInstrucions.map((dosage) => {
+      return `<strong>Sequence:</strong> ${dosage.sequence} <strong>As Needed:</strong> ${capitalizeFirstLetter(dosage.asNeededBoolean.toString())}`}
+    ).join("<br/>");
     return (
       <dl>
-        <dt>Reason</dt>
-        <dd>{reason}</dd>
+        <dt>Intent</dt>
+        <dd>{request.intent}</dd>
         <dt>Dosage</dt>
-        <dd>{dosage.text} | {dosage.routeText} | {dosage.asNeeded}</dd>
-        <dt>Effective Period</dt>
-        <dd>{effectivePeriod}</dd>
+        <dd>dosage</dd>
+        <dt>AuthoredOn</dt>
+        <dd>{new Date(request.authoredOn).toLocaleString("en-US")}</dd>
         <dt>Status</dt>
-        <dd>{status}</dd>
+        <dd>{request.status}</dd>
+        <dt>Requester</dt>
+        <dd>{request.requester}</dd>
+        <dt>Medication</dt>
+        <dd>{request.toText()}</dd>
       </dl>
     );
   }
 
   fillMedicationItems() {
-    this.props.medicationStatements.map((statement) => {
-      var period = statement.getEffectivePeriod(false, undefined);
-      var start_time = new Date();
-      var end_time = this.maxDate;
-      console.log(period);
-      if (period[0]) {
-        start_time = new Date(period[0]);
-      }
-      if (period[1]) {
-        end_time = new Date(period[1]);
-      }
+    this.props.fhirClient.patientData.medicationRequests.map((request) => {
+      var authoredOnDate = new Date(request.authoredOn);
+      // var start_time = new Date();
+      // var end_time = this.maxDate;
+      // console.log(period);
+      // if (period[0]) {
+      //   start_time = new Date(period[0]);
+      // }
+      // if (period[1]) {
+      //   end_time = new Date(period[1]);
+      // }
       this.items.push({
-        id: statement.getId(),
+        id: request.id,
         modalTitle: "e",
         modalHeader: "NIC",
-        modalBody: this.getStatementModalBody(statement),
+        modalBody: this.getRequestModalBody(request),
         item: {
-          id: statement.getId(),
-          group: statement.getMedicationReference("Unknown").reference,
-          content: statement.getText("Unknown"),
-          start: start_time,
-          end: end_time,
+          id: request.id,
+          group: request.medicationCodeableConcept.coding.code,
+          content: request.toText(),
+          start: authoredOnDate,
+          // end: end_time,
+          type: "point",
         },
       });
     });
   }
 
   fillObservationGroups() {
-    var observations = this.props.observations;
+    var observations = this.props.fhirClient.patientData.observations;
     var obseravionCodes = [];
     var observation;
     for (observation of observations) {
-      var code = observation.getCode("Unknown");
-      if (obseravionCodes.indexOf(code.code) === -1) {
-        obseravionCodes.push(code.code);
+      var code = observation.code;
+      if (obseravionCodes.indexOf(code.coding.code) === -1) {
+        obseravionCodes.push(code.coding.code);
         this.groups.push({
-          id: code.code,
-          content: code.display,
+          id: code.coding.code,
+          content: code.text,
         });
-        this.groups[1].nestedGroups.push(code.code);
+        this.groups[1].nestedGroups.push(code.coding.code);
       }
     }
   }
 
   getObservationModalBody(observation) {
-    const status = observation.getStatus('Unknown');
-    const category = observation.getCategory('Unknown');
-    const effectiveDateTime = observation.getEffectiveDateTime('Unknown');
-    const code = observation.getCode('Unknown').display;
     return (
       <dl>
         <dt>Status</dt>
-        <dd>{status}</dd>
-        <dt>Category</dt>
-        <dd>{category}</dd>
-        <dt>Effective DateTime</dt>
-        <dd>{effectiveDateTime}</dd>
-        <dt>Code</dt>
-        <dd>{code}</dd>
+        <dd>{observation.status}</dd>
+        <dt>Issued</dt>
+        <dd>{new Date(observation.issued).toLocaleString("en-US")}</dd>
+        <dt>Value</dt>
+        <dd>{observation.getValueText()}</dd>
       </dl>
     );
   }
 
   fillObservationItems() {
-    this.props.observations.map((observation) => {
-      var datetime = new Date(observation.getEffectiveDateTime(undefined));
+    this.props.fhirClient.patientData.observations.map((observation) => {
+      var datetime = new Date(observation.issued);
       this.items.push({
-        id: observation.getId(),
-        modalTitle: "e",
-        modalHeader: "NIC",
+        id: observation.id,
+        modalTitle: observation.code.text,
+        modalHeader: observation.category.toText(),
         modalBody: this.getObservationModalBody(observation),
         item: {
-          id: observation.getId(),
-          group: observation.getCode("Unknown").code,
-          content: observation.getText("Unknown"),
+          id: observation.id,
+          group: observation.code.coding.code,
+          content: observation.code.text,
           start: datetime,
           type: "point",
         },
@@ -158,10 +163,6 @@ class TimelineMain extends React.Component {
   }
 
   render() {
-    console.log(this.props.medicationStatements, this.props.observations);
-
-    // var groups = Immutable(this.getMedicationGroups());
-    // var items = Immutable(this.getMedicationItems());
     var timelineOptions = Immutable({});
     if (this.state.dataReady) {
       return (
@@ -174,7 +175,7 @@ class TimelineMain extends React.Component {
         </div>
       );
     }
-    return <div></div>;
+    return <Loading/>;
   }
 }
 

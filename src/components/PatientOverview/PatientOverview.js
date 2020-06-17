@@ -79,17 +79,14 @@ class PatientOverview extends React.Component {
         break;
       case "tab-timeline":
         selectedPageComponent = (
-          <div></div>
-          // <TimelineMain
-          //   observations={this.state.observations}
-          //   medicationStatements={this.state.medicationStatements}
-          // />
+          <TimelineMain
+            fhirClient={this.state.fhirClient}
+          />
         );
         break;
       case "tab-graphs":
         selectedPageComponent = (
-          <div></div>
-          // <GraphsMain observations={this.state.observations} />
+          <GraphsMain fhirClient={this.state.fhirClient} />
         );
         break;
       case "tab-debug":
