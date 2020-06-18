@@ -80,7 +80,7 @@ class TimelineComponent extends React.Component {
   };
 
   clickHandler = (event) => {
-    console.log(event)
+    if (!event.event.shiftKey) return;
     const item_id = event.item;
     if (item_id) {
       this.setState((state) => {

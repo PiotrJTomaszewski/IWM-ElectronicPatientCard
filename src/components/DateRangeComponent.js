@@ -3,7 +3,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { DateRangePicker } from "react-date-range";
 
-class GraphDateRangeComponent extends React.Component {
+class DateRangeComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -54,4 +54,4 @@ class GraphDateRangeComponent extends React.Component {
   }
 }
 
-export default GraphDateRangeComponent;
+export default DateRangeComponent;

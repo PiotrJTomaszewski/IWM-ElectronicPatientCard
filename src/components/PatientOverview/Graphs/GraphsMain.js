@@ -6,7 +6,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 import GraphComponent from "./GraphComponent";
-import GraphDateRangeComponent from "./GraphDateRangeComponent";
+import DateRangeComponent from "../../DateRangeComponent";
 import ObservationModel from "../../../models/ObservationModel";
 
 class GraphsMain extends React.Component {
@@ -151,7 +151,7 @@ class GraphsMain extends React.Component {
                 dateRange={this.state.dateRange}
                 parentOnRangeChange={this.dateRangeGraphOnChange}
               />
-              <GraphDateRangeComponent
+              <DateRangeComponent
                 dateRange={this.state.dateRange}
                 minMaxDateRange={this.state.defaultDateRange}
                 parentOnChange={this.dateRangeComponentOnChange}

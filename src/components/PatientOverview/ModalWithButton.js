@@ -1,6 +1,6 @@
-import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import React from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
 class ModalWithButton extends React.Component {
   state = {
@@ -40,8 +40,8 @@ class ModalWithButton extends React.Component {
       <div>
         <Button
           onClick={this.modalShowHandle}
-          variant="link"
-          className="p-0"
+          variant={this.props.buttonVariant ? this.props.buttonVariant : "link"}
+          className={this.props.buttonClass ? this.props.buttonClass : "p-0"}
           title={this.props.tooltip}
         >
           {this.props.buttonText}
@@ -50,13 +50,12 @@ class ModalWithButton extends React.Component {
           show={this.state.modalShown}
           onHide={this.modalHideHandle}
           animation={false}
+          size={this.props.size ? this.props.size : ""}
         >
           <Modal.Header closeButton>
             <Modal.Title>{this.props.modalTitle}</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            {this.props.modalBody}
-          </Modal.Body>
+          <Modal.Body>{this.props.modalBody}</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.modalHideHandle}>
               Close

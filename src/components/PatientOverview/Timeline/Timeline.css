@@ -21,3 +21,20 @@
 nav {
   z-index: 10;
 }
+
+.timelineModalBody {
+  display: flex;
+  justify-content: center;
+}
+
+.dateRangeModalButton {
+  z-index: 10;
+  position: relative;
+}
+
+.clearRangeButton {
+  z-index: 10;
+  position: absolute;
+  left: 170px;
+  top: 56px;
+}

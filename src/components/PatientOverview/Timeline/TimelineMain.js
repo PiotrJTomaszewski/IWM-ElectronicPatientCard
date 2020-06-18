@@ -1,19 +1,16 @@
 import React from "react";
+import Button from "react-bootstrap/Button";
 import TimelineComponent from "./TimelineComponent";
 import Loading from "../../Loading";
-import {capitalizeFirstLetter} from "../../../Helpers";
+import { capitalizeFirstLetter } from "../../../Helpers";
 import RawHtml from "../../RawHtml";
+import DateRangeComponent from "../../DateRangeComponent";
+import ModalWithButton from "../ModalWithButton";
 
 var Immutable = require("seamless-immutable");
 
-
 class TimelineMain extends React.Component {
-  maxDate = new Date("2030-12-12");
-  state = {
-    dataReady: false,
-    groups: undefined,
-    items: undefined,
-  };
+  // maxDate = new Date("2030-12-12");
 
   constructor(props) {
     super(props);
@@ -26,28 +23,45 @@ class TimelineMain extends React.Component {
       dataReady: false,
       groups: this.immutableGroups,
       items: this.immutableItems,
+      minViewDate: new Date(),
+      maxViewDate: new Date(),
+      minDataDate: new Date(),
+      maxDataDate: new Date(),
+      currentDateRange: [new Date(), new Date()],
     };
   }
 
   componentDidMount() {
-    this.items = []
+    this.items = [];
     this.fillObservationGroups();
-    this.fillObservationItems();
+    var obsMinmax = this.fillObservationItems();
     this.fillMedicationGroups();
-    this.fillMedicationItems();
+    var medMinmax = this.fillMedicationItems();
     this.immutableGroups = Immutable(this.groups);
     this.immutableItems = Immutable(this.items);
-    this.setState((state)=>{
+    var minDataDate = obsMinmax[0] < medMinmax[0] ? obsMinmax[0] : medMinmax[0];
+    var maxDataDate = obsMinmax[1] > medMinmax[1] ? obsMinmax[1] : medMinmax[1];
+    var minDate = new Date();
+    minDate.setFullYear(minDataDate.getFullYear() - 1);
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDataDate.getFullYear() + 1);
+    this.setState((state) => {
       return {
         dataReady: true,
         groups: this.immutableGroups,
-        items: this.immutableItems
-      }
-    })
+        items: this.immutableItems,
+        minViewDate: minDate,
+        maxViewDate: maxDate,
+        minDataDate: minDataDate,
+        maxDataDate: maxDataDate,
+        currentDateRange: [minDate, maxDate],
+      };
+    });
   }
 
   fillMedicationGroups() {
-    var medicationRequests = this.props.fhirClient.patientData.medicationRequests;
+    var medicationRequests = this.props.fhirClient.patientData
+      .medicationRequests;
     var medicationCodes = [];
     var request;
     for (request of medicationRequests) {
@@ -66,12 +80,14 @@ class TimelineMain extends React.Component {
   getRequestModalBody(request) {
     return (
       <dl>
-        <dt>Authored on</dt>
+        <dt>Authored On</dt>
         <dd>{new Date(request.authoredOn).toLocaleString("en-US")}</dd>
         <dt>Intent</dt>
         <dd>{capitalizeFirstLetter(request.intent)}</dd>
         <dt>Dosage</dt>
-        <dd><RawHtml>{request.getDosageHtml()}</RawHtml></dd>
+        <dd>
+          <RawHtml>{request.getDosageHtml()}</RawHtml>
+        </dd>
         <dt>Status</dt>
         <dd>{request.status}</dd>
         <dt>Requester</dt>
@@ -81,8 +97,15 @@ class TimelineMain extends React.Component {
   }
 
   fillMedicationItems() {
+    var minDataDate = new Date();
+    var maxDataDate = new Date();
     this.props.fhirClient.patientData.medicationRequests.forEach((request) => {
       var authoredOnDate = new Date(request.authoredOn);
+      if (authoredOnDate > maxDataDate) {
+        maxDataDate = authoredOnDate;
+      } else if (authoredOnDate < minDataDate) {
+        minDataDate = authoredOnDate;
+      }
       // var start_time = new Date();
       // var end_time = this.maxDate;
       // console.log(period);
@@ -107,6 +130,7 @@ class TimelineMain extends React.Component {
         },
       });
     });
+    return [minDataDate, maxDataDate];
   }
 
   fillObservationGroups() {
@@ -132,9 +156,17 @@ class TimelineMain extends React.Component {
         <dt>Status</dt>
         <dd>{observation.status}</dd>
         <dt>Issued</dt>
-        <dd>{observation.issued ? new Date(observation.issued).toLocaleString("en-US") : ""}</dd>
+        <dd>
+          {observation.issued
+            ? new Date(observation.issued).toLocaleString("en-US")
+            : ""}
+        </dd>
         <dt>Effective Date Time</dt>
-        <dd>{observation.effectiveDateTime ? new Date(observation.effectiveDateTime).toLocaleString("en-US") : ""}</dd>
+        <dd>
+          {observation.effectiveDateTime
+            ? new Date(observation.effectiveDateTime).toLocaleString("en-US")
+            : ""}
+        </dd>
         <dt>Value</dt>
         <dd>{observation.getValueText(false)}</dd>
       </dl>
@@ -142,8 +174,15 @@ class TimelineMain extends React.Component {
   }
 
   fillObservationItems() {
+    var minDataDate = new Date();
+    var maxDataDate = new Date();
     this.props.fhirClient.patientData.observations.forEach((observation) => {
       var datetime = new Date(observation.issued);
+      if (datetime > maxDataDate) {
+        maxDataDate = datetime;
+      } else if (datetime < minDataDate) {
+        minDataDate = datetime;
+      }
       this.items.push({
         id: observation.id,
         modalTitle: observation.code.text,
@@ -158,14 +197,56 @@ class TimelineMain extends React.Component {
         },
       });
     });
+    return [minDataDate, maxDataDate];
   }
+
+  dateRangeOnCalendarChange = (newDateRange) => {
+    this.setState({
+      currentDateRange: newDateRange,
+    });
+  };
+
+  clearDateRangeButtonClick = () => {
+    this.setState((oldState) => {
+      return {
+        currentDateRange: [oldState.minViewDate, oldState.maxViewDate],
+      };
+    });
+  };
 
   render() {
     // var timelineOptions = Immutable({orientation: {axis: 'both'}});
-    var timelineOptions = Immutable({});
+    var timelineOptions = Immutable({
+      min: this.state.currentDateRange[0],
+      max: this.state.currentDateRange[1],
+    });
     if (this.state.dataReady) {
       return (
         <div>
+          <ModalWithButton
+            buttonVariant={"primary"}
+            buttonText={"Choose date range"}
+            buttonClass={"dateRangeModalButton"}
+            size={"lg"}
+            modalTitle={"Choose date range"}
+            modalBody={
+              <div className="timelineModalBody">
+              <DateRangeComponent
+                dateRange={this.state.currentDateRange}
+                minMaxDateRange={[this.state.minDataDate, this.state.maxDataDate]}
+                parentOnChange={this.dateRangeOnCalendarChange}
+              /></div>
+            }
+          ></ModalWithButton>
+
+          <Button
+            variant="primary"
+            className="clearRangeButton"
+            onClick={this.clearDateRangeButtonClick}
+          >
+            Clear date range
+          </Button>
+
           <TimelineComponent
             options={timelineOptions}
             groups={this.state.groups}
@@ -174,7 +255,7 @@ class TimelineMain extends React.Component {
         </div>
       );
     }
-    return <Loading/>;
+    return <Loading />;
   }
 }
 
