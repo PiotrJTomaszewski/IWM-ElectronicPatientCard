@@ -125,6 +125,7 @@ class TimelineMain extends React.Component {
           group: request.medicationCodeableConcept.coding.code,
           content: request.toText(),
           start: authoredOnDate,
+          end: authoredOnDate,
           // end: end_time,
           type: "point",
         },
@@ -219,6 +220,7 @@ class TimelineMain extends React.Component {
     var timelineOptions = Immutable({
       min: this.state.currentDateRange[0],
       max: this.state.currentDateRange[1],
+      orientation: {axis: 'both'}
     });
     if (this.state.dataReady) {
       return (
