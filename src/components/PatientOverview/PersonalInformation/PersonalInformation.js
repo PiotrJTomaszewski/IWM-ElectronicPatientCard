@@ -10,7 +10,7 @@ import PatientName from "./PatientName";
 import PatientExtensionModel from "../../../models/PatientExtensionModel";
 import {capitalizeFirstLetter} from "../../../Helpers";
 import MaritalStatusEdit from "./Edit/MaritalStatusEdit";
-
+import DeceasedEdit from "./Edit/DeceasedEdit";
 
 function PersonalInformation(props) {
   var patient = props.fhirClient.patientData.patient.getCurrent();
@@ -91,8 +91,8 @@ function PersonalInformation(props) {
             </tr>
             <tr>
               <th scope="col">Deceased</th>
-              <td className={(multiVerPatient.isDifferentFromPrev("deceasedDateTime") || multiVerPatient.isDifferentFromPrev("deceasedBoolean")) ? "pers-inf-field-differ" : ""}>
-                {patient.deceasedDateTime ? `Yes, ${new Date(patient.deceasedDateTime).toLocaleString("en-US")}`: (patient.deceasedBoolean === false ? "No" : "Unspecified")}</td>
+              <td className={(multiVerPatient.isDifferentFromPrev("deceasedDateTime") || multiVerPatient.isDifferentFromPrev("deceasedBoolean")) ? "d-flex pers-inf-field-differ" : "d-flex"}>
+                {patient.deceasedDateTime ? `Yes, ${new Date(patient.deceasedDateTime).toLocaleString("en-US")}`: (patient.deceasedBoolean === false ? "No" : "Unspecified")}<DeceasedEdit fhirClient={props.fhirClient} parentOnVersionChangeHandle={props.parentOnVersionChangeHandle} /></td>
             </tr>
             <tr>
               <th scope="col">Part of a multiple birth</th>
@@ -102,7 +102,7 @@ function PersonalInformation(props) {
             <tr>
               <th scope="col">Marital status</th>
               <td className={multiVerPatient.isDifferentFromPrev("maritalStatus") ? "d-flex pers-inf-field-differ" : "d-flex"}>
-                {patient.maritalStatus.toText()}<MaritalStatusEdit fhirClient={props.fhirClient} /></td>
+                {patient.maritalStatus.toText()}<MaritalStatusEdit fhirClient={props.fhirClient} parentOnVersionChangeHandle={props.parentOnVersionChangeHandle} /></td>
             </tr>
             <tr>
               <th scope="col">Communication</th>

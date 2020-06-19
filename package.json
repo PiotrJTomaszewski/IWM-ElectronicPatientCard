@@ -23,7 +23,8 @@
     "react-visjs-timeline": "1.6.0",
     "seamless-immutable": "7.1.4",
     "vis-timeline": "7.3.6",
-    "date-fns": "2.14.0"
+    "date-fns": "2.14.0",
+    "react-datetime-picker": "3.0.2"
   },
   "scripts": {
     "start": "react-scripts start",

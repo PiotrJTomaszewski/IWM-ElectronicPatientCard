@@ -62,7 +62,7 @@ class PatientVersionControl extends React.Component {
         disabled={activePage === 1}
       />
     );
-    var range = verNo > 5 ? [activePage - 2, activePage + 2] : [1, verNo];
+    var range = verNo > 5 ? [(activePage - 2 > 1) ? activePage - 2 : 1, (activePage + 2 > verNo) ? verNo : activePage + 2] : [1, verNo];
     for (var i = range[0]; i <= range[1]; i++) {
       pages.push(
         <Pagination.Item
@@ -100,7 +100,10 @@ class PatientVersionControl extends React.Component {
         <div title="Select resource version">
           <Pagination>{this.state.pagesButtons}</Pagination>
         </div>
-        <span>Last modified</span>
+        <div className="ml-auto">
+          <span>Last modified </span>
+          <span>{new Date(this.state.fhirClient.patientData.patient.getCurrent().meta.lastUpdated).toLocaleString("en-US")}</span>
+        </div>
       </div>
     );
   }

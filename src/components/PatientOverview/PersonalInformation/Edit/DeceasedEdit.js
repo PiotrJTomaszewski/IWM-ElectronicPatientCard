@@ -2,16 +2,48 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-
+import DateTimePicker from "react-datetime-picker";
 
 class DeceasedEdit extends React.Component {
   constructor(props) {
     super(props);
-    const currentMaritalStatus = this.props.fhirClient.patientData.patient.getCurrent().maritalStatus;
+    const currentDeceasedBoolean = this.props.fhirClient.patientData.patient.getCurrent()
+      .deceasedBoolean;
+    const currentDeceasedDateTime = this.props.fhirClient.patientData.patient.getCurrent()
+      .deceasedDateTime;
+    const newIsDeceased = this.props.fhirClient.patientData.patient
+      .getCurrent()
+      .isDeceased();
     this.state = {
       modalShown: false,
-      newMaritalStatusCode: currentMaritalStatus.code,
+      newIsDeceased: newIsDeceased,
+      newDeceasedBoolean: currentDeceasedBoolean,
+      newDeceasedDateTime: currentDeceasedDateTime,
     };
+  }
+
+  componentDidUpdate(oldProps) {
+    const currentDeceasedBoolean = this.props.fhirClient.patientData.patient.getCurrent()
+      .deceasedBoolean;
+    const currentDeceasedDateTime = this.props.fhirClient.patientData.patient.getCurrent()
+      .deceasedDateTime;
+    const oldDeceasedBoolean = oldProps.fhirClient.patientData.patient.getCurrent()
+      .deceasedBoolean;
+    const oldDeceasedDateTime = oldProps.fhirClient.patientData.patient.getCurrent()
+      .deceasedDateTime;
+    if (
+      currentDeceasedBoolean !== oldDeceasedBoolean ||
+      currentDeceasedDateTime !== oldDeceasedDateTime
+    ) {
+      const newIsDeceased = this.props.fhirClient.patientData.patient
+        .getCurrent()
+        .isDeceased();
+      this.setState({
+        newDeceasedBoolean: currentDeceasedBoolean,
+        newDeceasedDateTime: currentDeceasedDateTime,
+        newIsDeceased: newIsDeceased,
+      });
+    }
   }
 
   modalShowHandle = () => {
@@ -36,49 +68,75 @@ class DeceasedEdit extends React.Component {
     }
   };
 
-  newValueHandle = (event) => {
-    if (event && event.target && event.target.value) {
+  deceasedChangeHandle = (event) => {
+    if (event && event.target) {
+      const newDeceasedBoolean = event.target.checked;
       this.setState({
-        newMaritalStatusCode: event.target.value,
+        newDeceasedBoolean: newDeceasedBoolean,
+        newIsDeceased: newDeceasedBoolean,
       });
     }
   };
 
-  onUpdateSuccess = () => {
+  deceasedDateTimeChangeHandle = (newDateTime) => {
+    this.setState({
+      newDeceasedDateTime: newDateTime,
+    });
+  };
 
-  }
+  onUpdateSuccess = (newVersion) => {
+    this.props.parentOnVersionChangeHandle(newVersion);
+    this.setState((state) => {
+      return {
+        modalShown: false,
+      };
+    });
+  };
 
-  onUpdateFail = () => {
-
-  }
+  onUpdateFail = () => {};
 
   saveDataHandle = () => {
     const patientId = this.props.fhirClient.patientData.patient.getCurrent().id;
-    const newCode = this.state.newMaritalStatusCode;
-    const newText = MaritalStatusModel.maritalStatusCodes[newCode];
-    console.log(newCode, newText);
-    const patch = [{
-      op: "add",
-      path: "/maritalStatus",
-      value: {
-        // In synthea dataset both text and display are the same as code but on update we're changing them to an actual text representation
-        coding: [{system: "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus", code: newCode, display: newText}],
-        text: newText
-      }
-    }]
-    this.props.fhirClient.updateResource("Patient", patientId, patch, this.onUpdateSuccess, this.onUpdateFail);
+    const newDeceasedBoolean = this.state.newDeceasedBoolean;
+    const newDeceasedDateTime = this.state.newDeceasedDateTime;
+    var patch;
+    if (!newDeceasedBoolean) {
+      patch = [
+        {
+          op: "add",
+          path: "/deceasedBoolean",
+          value: false,
+        },
+      ];
+    } else {
+      patch = [
+        {
+          op: "add",
+          path: "/deceasedDateTime",
+          value: newDeceasedDateTime,
+        },
+      ];
+    }
+
+    this.props.fhirClient.updateResource(
+      "Patient",
+      patientId,
+      patch,
+      this.onUpdateSuccess,
+      this.onUpdateFail
+    );
   };
 
   render() {
     var patient = this.props.fhirClient.patientData.patient.getCurrent();
-    var nextOptionKey = 0;
+    console.log(patient.isDeceased());
     return (
       <div className="ml-auto">
         <Button
           onClick={this.modalShowHandle}
           variant="link"
           className="p-0"
-          title={this.props.tooltip}
+          title="Edit Deceased Status"
         >
           {<i className="fas fa-edit"></i>}
         </Button>
@@ -89,29 +147,42 @@ class DeceasedEdit extends React.Component {
           size={this.props.size ? this.props.size : ""}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Edit Patient's Marital Status</Modal.Title>
+            <Modal.Title>Edit Patient's Deceased Status</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div>
               <h5>Current value</h5>
-              <span>{patient.maritalStatus.toText()}</span>
+              <span>
+                {patient.deceasedDateTime
+                  ? `Yes, ${new Date(patient.deceasedDateTime).toLocaleString(
+                      "en-US"
+                    )}`
+                  : patient.deceasedBoolean === false
+                  ? "No"
+                  : "Unspecified"}
+              </span>
               <h5>New value</h5>
               <Form>
-                <Form.Group controlId="newMaritalStatusFormGroup" />
-                <Form.Control
-                  as="select"
-                  id="newMaritalStatusBox"
-                  onChange={this.newValueHandle}
-                  value={this.state.newMaritalStatusCode}
-                >
-                  {Object.keys(MaritalStatusModel.maritalStatusCodes).map(
-                    (code) => (
-                      <option value={code} key={nextOptionKey++}>
-                        {MaritalStatusModel.maritalStatusCodes[code]}
-                      </option>
-                    )
-                  )}
-                </Form.Control>
+                <Form.Group controlId="newDeceasedStatusGroup">
+                  <Form.Label>Patient is deceased</Form.Label>
+                  <Form.Control
+                    type="checkbox"
+                    onChange={this.deceasedChangeHandle}
+                    checked={this.state.newIsDeceased}
+                    className="small-checkbox"
+                  />
+                  <Form.Group controlId="newDeceasedDateTimeGroup">
+                    <Form.Label>Deceased date time</Form.Label>
+                    <br />
+                    <DateTimePicker
+                      format="y-MM-dd h:mm:ss a"
+                      maxDate={new Date()}
+                      value={this.state.newDeceasedDateTime}
+                      onChange={this.deceasedDateTimeChangeHandle}
+                      disabled={!this.state.newIsDeceased}
+                    />
+                  </Form.Group>
+                </Form.Group>
               </Form>
             </div>
           </Modal.Body>

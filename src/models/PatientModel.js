@@ -92,4 +92,14 @@ export default class PatientModel extends Model {
     }
     return undefined;
   }
+
+  isDeceased() {
+    if (this.deceasedDateTime) {
+      return true;
+    }
+    if (this.deceasedBoolean === false) {
+      return false;
+    }
+    return null;
+  }
 }

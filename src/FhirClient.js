@@ -143,9 +143,17 @@ export default class FhirClient {
       data: JSON.stringify(patch),
     })
       .done((data) => {
-        console.log(data.responseJSON);
-        onSuccess();
-        console.log(data);
+        var newVersion;
+        switch(data.resourceType) {
+          case "Patient":
+            var newPatient = new PatientModel(data);
+            newVersion = newPatient.meta.versionId;
+            this.patientData.patient.addVersion(newVersion, newPatient);
+            break;
+          default:
+            break;
+        }
+        onSuccess(newVersion);
       })
       .fail((error) => {
         onFailure();

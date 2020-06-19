@@ -45,9 +45,14 @@ class MaritalStatusEdit extends React.Component {
     }
   };
 
-  onUpdateSuccess = () => {
-
-  }
+  onUpdateSuccess = (newVersion) => {
+    this.props.parentOnVersionChangeHandle(newVersion);
+    this.setState((state) => {
+      return {
+        modalShown: false,
+      };
+    });
+  };
 
   onUpdateFail = () => {
 
@@ -57,7 +62,6 @@ class MaritalStatusEdit extends React.Component {
     const patientId = this.props.fhirClient.patientData.patient.getCurrent().id;
     const newCode = this.state.newMaritalStatusCode;
     const newText = MaritalStatusModel.maritalStatusCodes[newCode];
-    console.log(newCode, newText);
     const patch = [{
       op: "add",
       path: "/maritalStatus",
@@ -79,7 +83,7 @@ class MaritalStatusEdit extends React.Component {
           onClick={this.modalShowHandle}
           variant="link"
           className="p-0"
-          title={this.props.tooltip}
+          title="Edit Marital Status"
         >
           {<i className="fas fa-edit"></i>}
         </Button>
