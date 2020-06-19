@@ -1,7 +1,11 @@
-export default class MultiVersionPatientModel {
-  currentVersion = 1;
+export default class MultiVersionModel {
+  currentVersion = 1; // Version numbering begins at 1
   versionNo = 0;
-  patientVersions = [];
+  modelVersions = [];
+
+  constructor(localId) {
+    this.localId = localId;
+  }
 
   addVersion(versionPar, model) {
     var version = parseInt(versionPar);
@@ -9,11 +13,15 @@ export default class MultiVersionPatientModel {
       this.currentVersion = version;
     }
     this.versionNo++;
-    this.patientVersions[version] = model;
+    this.modelVersions[version] = model;
   }
 
   getCurrent() {
-    return this.patientVersions[this.currentVersion];
+    return this.modelVersions[this.currentVersion];
+  }
+
+  getLast() {
+    return this.modelVersions[this.versionNo];
   }
 
   isDifferentFromPrev(fieldName) {
@@ -22,11 +30,11 @@ export default class MultiVersionPatientModel {
     }
     var currVal;
     var prevVal;
-    if (this.patientVersions[this.currentVersion]) {
-      currVal = this.patientVersions[this.currentVersion][fieldName];
+    if (this.modelVersions[this.currentVersion]) {
+      currVal = this.modelVersions[this.currentVersion][fieldName];
     }
-    if (this.patientVersions[this.currentVersion - 1]) {
-      prevVal = this.patientVersions[this.currentVersion - 1][fieldName];
+    if (this.modelVersions[this.currentVersion - 1]) {
+      prevVal = this.modelVersions[this.currentVersion - 1][fieldName];
     }
     return JSON.stringify(currVal) !== JSON.stringify(prevVal);
   }

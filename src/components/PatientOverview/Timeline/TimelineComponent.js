@@ -3,6 +3,9 @@ import Timeline from "react-visjs-timeline";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
+import { capitalizeFirstLetter } from "../../../Helpers";
+import RawHtml from "../../RawHtml";
+
 import "./Timeline.css";
 
 class TimelineComponent extends React.Component {
@@ -39,7 +42,64 @@ class TimelineComponent extends React.Component {
     });
   }
 
+  getRequestModalBody(request) {
+    return (
+      <dl>
+        <dt>Authored On</dt>
+        <dd>{new Date(request.authoredOn).toLocaleString("en-US")}</dd>
+        <dt>Intent</dt>
+        <dd>{capitalizeFirstLetter(request.intent)}</dd>
+        <dt>Dosage</dt>
+        <dd>
+          <RawHtml>{request.getDosageHtml()}</RawHtml>
+        </dd>
+        <dt>Status</dt>
+        <dd>{capitalizeFirstLetter(request.status)}</dd>
+        <dt>Requester</dt>
+        <dd>{request.requester}</dd>
+      </dl>
+    );
+  }
+
+  getObservationModalBody(observation) {
+    return (
+      <dl>
+        <dt>Status</dt>
+        <dd>{capitalizeFirstLetter(observation.status)}</dd>
+        <dt>Issued</dt>
+        <dd>
+          {observation.issued
+            ? new Date(observation.issued).toLocaleString("en-US")
+            : ""}
+        </dd>
+        <dt>Effective Date Time</dt>
+        <dd>
+          {observation.effectiveDateTime
+            ? new Date(observation.effectiveDateTime).toLocaleString("en-US")
+            : ""}
+        </dd>
+        <dt>Value</dt>
+        <dd>{observation.getValueText(false)}</dd>
+      </dl>
+    );
+  }
+
   createModal(item, key) {
+    var modalTitle;
+    var modalHeader;
+    var modalBody;
+    var currentModel;
+    if (item.type === "Observation") {
+      currentModel = this.props.fhirClient.patientData.observations[item.localId].getCurrent();
+      modalTitle =  currentModel.code.text
+      modalHeader = <div className="d-flex">{currentModel.category.toText()}<i className="fas fa-user-md fa-2x ml-3"></i></div>
+      modalBody =  this.getObservationModalBody(currentModel)
+    } else { // Medication Request
+      currentModel = this.props.fhirClient.patientData.medicationRequests[item.localId].getCurrent();
+      modalTitle = currentModel.toText()
+      modalHeader = <i className="fas fa-pills fa-2x"></i>
+      modalBody = this.getRequestModalBody(currentModel)
+    }
     return (
       <div key={key}>
         <Modal
@@ -49,10 +109,10 @@ class TimelineComponent extends React.Component {
           size="lg"
         >
           <Modal.Header>
-            <Modal.Title>{item.modalTitle}</Modal.Title>
-            {item.modalHeader}
+            <Modal.Title>{modalTitle}</Modal.Title>
+            {modalHeader}
           </Modal.Header>
-          <Modal.Body>{item.modalBody}</Modal.Body>
+          <Modal.Body>{modalBody}</Modal.Body>
           <Modal.Footer>
             <Button
               variant="secondary"
@@ -102,7 +162,7 @@ class TimelineComponent extends React.Component {
         <Timeline
           options={this.props.options}
           items={this.props.items.map((element) => {
-            return element.item;
+            return element.timelineItem;
           })}
           groups={this.props.groups}
           clickHandler={this.clickHandler}

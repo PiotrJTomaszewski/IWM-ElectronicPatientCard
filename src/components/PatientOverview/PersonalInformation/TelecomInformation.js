@@ -31,7 +31,7 @@ class TelecomInformation extends React.Component {
     return (
       <Card>
         <Card.Title className="text-center mt-4">
-          <div><span className="h2">Contact details <ContactDetailsEdit mode="add" fhirClient={this.props.fhirClient} currentTelecom={null} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/></span></div>
+          <div><span className="h2">Contact details {this.props.fhirClient.patientData.patient.isCurrentTheLast() ? (<ContactDetailsEdit mode="add" fhirClient={this.props.fhirClient} currentTelecom={null} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/>) : null}</span></div>
         </Card.Title>
         <Card.Body>
           <Table>

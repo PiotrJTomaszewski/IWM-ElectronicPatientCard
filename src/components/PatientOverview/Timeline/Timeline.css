@@ -42,3 +42,9 @@ nav {
 .pers-inf-field-differ {
   background-color: #28a7455c;
 }
+
+.fixed-to-right {
+  position: absolute;
+  top: 63px;
+  right: 10px;
+}

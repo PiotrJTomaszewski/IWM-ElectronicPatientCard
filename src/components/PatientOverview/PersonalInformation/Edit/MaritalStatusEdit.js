@@ -21,9 +21,6 @@ class MaritalStatusEdit extends React.Component {
         modalShown: true,
       };
     });
-    if (this.props.modalShowHandle) {
-      this.props.modalShowHandle();
-    }
   };
 
   modalCancelHandle = () => {
@@ -32,9 +29,6 @@ class MaritalStatusEdit extends React.Component {
         modalShown: false,
       };
     });
-    if (this.props.modalHideHandle) {
-      this.props.modalHideHandle();
-    }
   };
 
   newValueHandle = (event) => {

@@ -1,7 +1,7 @@
 import PatientModel from "./models/PatientModel";
 import ObservationModel from "./models/ObservationModel";
 import MedicationRequestModel from "./models/MedicationRequestModel";
-import MultiVersionPatientModel from "./models/MultiVersionPatientModel";
+import MultiVersionModel from "./models/MultiVersionModel";
 import $ from "jquery";
 
 export default class FhirClient {
@@ -39,30 +39,51 @@ export default class FhirClient {
       .then((response) => response.json())
       .then((data) => {
         data.entry.forEach((entry) => {
+          var currVerId;
+          var ver;
           switch (entry.resource.resourceType) {
             case "Patient":
-              this.patientData.patient = new MultiVersionPatientModel();
-              var patient = new PatientModel(entry.resource);
-              var currVerId = patient.meta.versionId;
-              this.patientData.patient.addVersion(currVerId, patient);
-              for (var ver = currVerId - 1; ver >= 1; ver--) {
+              this.patientData.patient = new MultiVersionModel();
+              var newPatient = new PatientModel(entry.resource);
+              currVerId = newPatient.meta.versionId;
+              this.patientData.patient.addVersion(currVerId, newPatient);
+              for (ver = currVerId - 1; ver >= 1; ver--) {
                 this.historyToFetch.push({
                   resource: "Patient",
-                  id: patient.id,
+                  id: newPatient.id,
                   versionToFetch: ver,
                 });
               }
-
               break;
             case "Observation":
-              this.patientData.observations.push(
-                new ObservationModel(entry.resource)
-              );
+              var observationLocalId = this.patientData.observations.length;
+              this.patientData.observations[observationLocalId] = new MultiVersionModel(observationLocalId);
+              var newObservation = new ObservationModel(entry.resource);
+              currVerId = newObservation.meta.versionId;
+              this.patientData.observations[observationLocalId].addVersion(currVerId, newObservation);
+              for (ver = currVerId - 1; ver >= 1; ver--) {
+                this.historyToFetch.push({
+                  resource: "Observation",
+                  id: newObservation.id,
+                  versionToFetch: ver,
+                  localId: observationLocalId
+                })
+              }
               break;
             case "MedicationRequest":
-              this.patientData.medicationRequests.push(
-                new MedicationRequestModel(entry.resource)
-              );
+              var medicationRequestLocalId = this.patientData.medicationRequests.length;
+              this.patientData.medicationRequests[medicationRequestLocalId] = new MultiVersionModel(medicationRequestLocalId);
+              var newMedicationRequest = new MedicationRequestModel(entry.resource);
+              currVerId = newMedicationRequest.meta.versionId;
+              this.patientData.medicationRequests[medicationRequestLocalId].addVersion(currVerId, newMedicationRequest);
+              for (ver = currVerId - 1; ver >= 1; ver--) {
+                this.historyToFetch.push({
+                  resource: "MedicationRequest",
+                  id: newMedicationRequest.id,
+                  versionToFetch: ver,
+                  localId: medicationRequestLocalId
+                })
+              }
               break;
             default:
               break;
@@ -91,19 +112,23 @@ export default class FhirClient {
   async fetchPatientDataHistory(onSuccess, onFailure) {
     try {
       for (var entry of this.historyToFetch) {
+        this.tmpEntry = entry;
         var url = `${this.API_URL}/${entry.resource}/${entry.id}/_history/${entry.versionToFetch}?_format=json`;
         await fetch(url, { mode: "cors" })
           .then((response) => response.json())
           .then((data) => {
             switch (data.resourceType) {
               case "Patient":
-                var patient = new PatientModel(data);
-                var currVerId = patient.meta.versionId;
-                this.patientData.patient.addVersion(currVerId, patient);
+                var newPatient = new PatientModel(data)
+                this.patientData.patient.addVersion(newPatient.meta.versionId, newPatient);
                 break;
               case "Observation":
+                var newObservationModel = new ObservationModel(data);
+                this.patientData.observations[this.tmpEntry.localId].addVersion(newObservationModel.meta.versionId, newObservationModel);
                 break;
               case "MedicationRequest":
+                var medicationRequestModel = new MedicationRequestModel(data);
+                this.patientData.medicationRequests[this.tmpEntry.localId].addVersion(medicationRequestModel.meta.versionId, medicationRequestModel);
                 break;
               default:
                 break;
