@@ -1,6 +1,18 @@
 import Model from "./Model";
 
 export default class MaritalStatusModel extends Model {
+  static maritalStatusCodes = {
+    A: "Annulled",
+    D: "Divorced",
+    I: "Interlocutory",
+    L: "Legally Separated",
+    M: "Married",
+    P: "Polygamous",
+    S: "Never Married",
+    T: "Domestic Partner",
+    U: "Unmarried",
+    W: "Widowed"
+  }
   constructor(resource) {
     super();
     this.system = this._getPath(resource, "coding.0.system");
@@ -10,14 +22,21 @@ export default class MaritalStatusModel extends Model {
   }
 
   toText() {
+    var text;
     if (this.text !== undefined) {
-      return this.text;
+      text = this.text;
+    } else if (this.display !== undefined) {
+      text = this.display;
+    } else if (this.code !== undefined) {
+      text = this.code;
     }
-    if (this.display !== undefined) {
-      return this.display;
+    if (text && text.length === 1) {
+      if (text in MaritalStatusModel.maritalStatusCodes) {
+        text = MaritalStatusModel.maritalStatusCodes[text];
+      }
     }
-    if (this.code !== undefined) {
-      return this.code;
+    if (text) {
+      return text;
     }
     return undefined;
   }

@@ -8,22 +8,31 @@ import TelecomInformation from "./TelecomInformation";
 import AddressInformation from "./AddressInformation";
 import PatientHeader from "./PatientHeader";
 import IdentifiersList from "./IdentifiersList/IdentifiersList";
+import PatientVersionControl from "./PatientVersionControl";
 // import ContactList from "./ContactList/ContactList";
 
 class PersonalInformationMain extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      fhirClient: props.fhirClient
+      fhirClient: props.fhirClient,
+      currentPatientVersion: props.fhirClient.patientData.patient.currentVersion
     }
   }
 
   componentDidUpdate(oldProps) {
-    if (this.props.fhirClient !== oldProps.fhirClient) {
+    if (JSON.stringify(this.props.fhirClient.patientData.patient) !== JSON.stringify(oldProps.fhirClient.patientData.patient)) {
       this.setState({
-        fhirClient: this.props.fhirClient
+        fhirClient: this.props.fhirClient,
+        currentPatientVersion: this.props.fhirClient.patient.currentVersion
       })
     }
+  }
+
+  patientVersionChangeHandle = (newPatientVersion) => {
+    this.setState({
+      currentPatientVersion: newPatientVersion
+    })
   }
 
   render() {
@@ -47,6 +56,7 @@ class PersonalInformationMain extends React.Component {
           <IdentifiersList fhirClient={this.state.fhirClient} />
           {/* <ContactList patient={this.props.patient} /> */}
         </Container>
+        <PatientVersionControl fhirClient={this.state.fhirClient} currentPatientVersion={this.state.currentPatientVersion} parentOnVersionChangeHandle={this.patientVersionChangeHandle}/>
       </Container>
     );
   }

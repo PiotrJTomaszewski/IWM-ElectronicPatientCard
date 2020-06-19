@@ -8,7 +8,7 @@ import RawHtml from "../../RawHtml";
 
 class AddressInformation extends React.Component {
   createList = () => {
-    var patient = this.props.fhirClient.patientData.patient;
+    var patient = this.props.fhirClient.patientData.patient.getCurrent();
     var addresses = patient.addresses;
     if (addresses === undefined) {
       return (

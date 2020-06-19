@@ -9,10 +9,12 @@ import RawHtml from "../../RawHtml";
 import PatientName from "./PatientName";
 import PatientExtensionModel from "../../../models/PatientExtensionModel";
 import {capitalizeFirstLetter} from "../../../Helpers";
+import MaritalStatusEdit from "./Edit/MaritalStatusEdit";
 
 
 function PersonalInformation(props) {
-  var patient = props.fhirClient.patientData.patient;
+  var patient = props.fhirClient.patientData.patient.getCurrent();
+  var multiVerPatient = props.fhirClient.patientData.patient;
   var birthPlace = patient.getPatientExtension(PatientExtensionModel.extType["patient-birthPlace"]);
   var birthPlaceWithModal;
   if (birthPlace) {
@@ -53,7 +55,14 @@ function PersonalInformation(props) {
           />
       );
   }
-
+  const birthSex = patient.getPatientExtension(PatientExtensionModel.extType["us-core-birthsex"]);
+  var birthSexText;
+  switch(birthSex) {
+    case 'F': birthSexText = "Female"; break;
+    case "M": birthSexText = "Male"; break;
+    case "UNK": birthSexText = "Unknown"; break;
+    default: break;
+  }
   return (
     <Card>
       <Card.Title className="text-center mt-4">
@@ -66,37 +75,44 @@ function PersonalInformation(props) {
           <tbody>
             <tr>
               <th scope="col">Name</th>
-              <td>
+              <td className={multiVerPatient.isDifferentFromPrev("names") ? "pers-inf-field-differ" : ""}>
                 <PatientName fhirClient={props.fhirClient} />
               </td>
             </tr>
             <tr>
               <th scope="col">Gender</th>
-              <td>{capitalizeFirstLetter(patient.gender)}</td>
+              <td className={multiVerPatient.isDifferentFromPrev("gender") ? "pers-inf-field-differ" : ""}>
+                {capitalizeFirstLetter(patient.gender)}</td>
             </tr>
             <tr>
               <th scope="col">Birth date</th>
-              <td>{patient.birthDate}</td>
+              <td className={multiVerPatient.isDifferentFromPrev("birthDate") ? "pers-inf-field-differ" : ""}>
+                {patient.birthDate}</td>
             </tr>
             <tr>
               <th scope="col">Deceased</th>
-              <td>{patient.deceasedDateTime ? `Yes, ${new Date(patient.deceasedDateTime).toLocaleString("en-US")}`: (patient.deceasedBoolean === false ? "No" : "Unspecified")}</td>
+              <td className={(multiVerPatient.isDifferentFromPrev("deceasedDateTime") || multiVerPatient.isDifferentFromPrev("deceasedBoolean")) ? "pers-inf-field-differ" : ""}>
+                {patient.deceasedDateTime ? `Yes, ${new Date(patient.deceasedDateTime).toLocaleString("en-US")}`: (patient.deceasedBoolean === false ? "No" : "Unspecified")}</td>
             </tr>
             <tr>
               <th scope="col">Part of a multiple birth</th>
-              <td>{capitalizeFirstLetter(patient.multipleBirthBoolean.toString())}</td>
+              <td className={multiVerPatient.isDifferentFromPrev("multipleBirthBoolean") ? "pers-inf-field-differ": ""}
+              >{patient.multipleBirthBoolean !== undefined ? (patient.multipleBirthBoolean ? 'Yes' : 'No') : 'Unspecified'}</td>
             </tr>
             <tr>
               <th scope="col">Marital status</th>
-              <td>{patient.maritalStatus.toText()}</td>
+              <td className={multiVerPatient.isDifferentFromPrev("maritalStatus") ? "d-flex pers-inf-field-differ" : "d-flex"}>
+                {patient.maritalStatus.toText()}<MaritalStatusEdit fhirClient={props.fhirClient} /></td>
             </tr>
             <tr>
               <th scope="col">Communication</th>
-              <td>TODO</td>
+              <td>
+                TODO</td>
             </tr>
             <tr>
               <th scope="col">Race</th>
-              <td>{patient.getPatientExtension(PatientExtensionModel.extType["us-core-race"])}</td>
+              <td>
+                {patient.getPatientExtension(PatientExtensionModel.extType["us-core-race"])}</td>
             </tr>
             <tr>
               <th scope="col">Ethnicity</th>
@@ -108,7 +124,7 @@ function PersonalInformation(props) {
             </tr>
             <tr>
               <th scope="col">Birth Sex</th>
-              <td>{patient.getPatientExtension(PatientExtensionModel.extType["us-core-birthsex"])}</td>
+              <td>{birthSexText}</td>
             </tr>
             <tr>
               <th scope="col">Birth Place</th>

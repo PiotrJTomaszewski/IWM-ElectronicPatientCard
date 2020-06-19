@@ -5,7 +5,7 @@ import {capitalizeFirstLetter} from "../../../Helpers";
 
 class PatientName extends React.Component {
   getAllNames() {
-    var patient = this.props.fhirClient.patientData.patient;
+    var patient = this.props.fhirClient.patientData.patient.getCurrent();
     var id = 0;
     return patient.names.map((name) => {
       return (
@@ -22,7 +22,7 @@ class PatientName extends React.Component {
   }
 
   render() {
-    var patient = this.props.fhirClient.patientData.patient;
+    var patient = this.props.fhirClient.patientData.patient.getCurrent();
     var mainName = patient.getMainName();
     // Animation in version 1.0.1 of react-bootstrap usues an deprecated method so it has to be turned off unitil the library is updated
     return (

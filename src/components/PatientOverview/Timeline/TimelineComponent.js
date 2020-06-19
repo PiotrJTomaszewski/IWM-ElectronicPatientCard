@@ -46,6 +46,7 @@ class TimelineComponent extends React.Component {
           show={this.state.modalsShown[item.id]}
           onHide={this.modalHideHandle}
           animation={false}
+          size="lg"
         >
           <Modal.Header>
             <Modal.Title>{item.modalTitle}</Modal.Title>

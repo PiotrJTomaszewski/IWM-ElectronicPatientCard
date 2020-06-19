@@ -65,4 +65,5 @@ export default class PatientExtensionModel extends Model {
         break;
     }
   }
+
 }

@@ -8,7 +8,7 @@ import IdentifiersItem from "./IdentifiersItem";
 class IdentifiersList extends React.Component {
   createList = () => {
     var key=0;
-    var identifiers = this.props.fhirClient.patientData.patient.identifiers;
+    var identifiers = this.props.fhirClient.patientData.patient.getCurrent().identifiers;
     if (!identifiers) {
       return (<tr><td>No identifiers found</td></tr>);
     }

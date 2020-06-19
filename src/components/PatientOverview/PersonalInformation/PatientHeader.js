@@ -3,7 +3,7 @@ import RawHtml from '../../RawHtml';
 
 function PatientHeader(props) {
   console.log(props)
-  var text = props.fhirClient.patientData.patient.toText();
+  var text = props.fhirClient.patientData.patient.getCurrent().toText();
   if (!text) {
     text = "Unspecified";
   }

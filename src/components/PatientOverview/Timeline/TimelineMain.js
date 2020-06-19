@@ -118,7 +118,7 @@ class TimelineMain extends React.Component {
       this.items.push({
         id: request.id,
         modalTitle: request.toText(),
-        modalHeader: "",
+        modalHeader: <i className="fas fa-pills fa-2x"></i>,
         modalBody: this.getRequestModalBody(request),
         item: {
           id: request.id,
@@ -187,7 +187,7 @@ class TimelineMain extends React.Component {
       this.items.push({
         id: observation.id,
         modalTitle: observation.code.text,
-        modalHeader: observation.category.toText(),
+        modalHeader: <div className="d-flex">{observation.category.toText()}<i className="fas fa-user-md fa-2x ml-3"></i></div>,
         modalBody: this.getObservationModalBody(observation),
         item: {
           id: observation.id,

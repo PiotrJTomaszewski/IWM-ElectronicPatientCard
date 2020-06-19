@@ -107,7 +107,7 @@ class PatientOverview extends React.Component {
           <header>
             <nav>
               <PatientOverviewHeader
-                patient={this.state.fhirClient.patientData.patient}
+                patient={this.state.fhirClient.patientData.patient.getCurrent()}
                 onLinkClicked={this.tabSelectedHandler}
               />
             </nav>
