@@ -47,7 +47,7 @@ class PersonalInformationMain extends React.Component {
               <PersonalInformation fhirClient={this.state.fhirClient} parentOnVersionChangeHandle={this.patientVersionChangeHandle}/>
             </Col>
             <Col>
-              <TelecomInformation fhirClient={this.state.fhirClient} />
+              <TelecomInformation fhirClient={this.state.fhirClient} parentOnVersionChangeHandle={this.patientVersionChangeHandle} />
               <AddressInformation fhirClient={this.state.fhirClient} />
             </Col>
           </Row>

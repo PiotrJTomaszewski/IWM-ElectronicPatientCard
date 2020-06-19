@@ -31,7 +31,8 @@ export default class PatientModel extends Model {
     }
     var telecTmp = this._getPath(resource, "telecom");
     if (telecTmp !== undefined && telecTmp.length > 0) {
-      this.telecoms = telecTmp.map((telec) => new TelecomModel(telec));
+      var telecomLocalId = 0;
+      this.telecoms = telecTmp.map((telec) => new TelecomModel(telec, telecomLocalId++));
     }
     this.gender = this._getPath(resource, "gender");
     this.birthDate = this._getPath(resource, "birthDate");
@@ -101,5 +102,9 @@ export default class PatientModel extends Model {
       return false;
     }
     return null;
+  }
+
+  getFreeLocalTelecomId() {
+    return Math.max(this.telecoms.map((element) => element.localId))+1;
   }
 }

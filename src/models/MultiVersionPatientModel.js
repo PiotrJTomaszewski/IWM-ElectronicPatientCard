@@ -51,4 +51,8 @@ export default class MultiVersionPatientModel {
     }
     return this.currentVersion;
   }
+
+  isCurrentTheLast() {
+    return this.currentVersion === this.versionNo;
+  }
 }

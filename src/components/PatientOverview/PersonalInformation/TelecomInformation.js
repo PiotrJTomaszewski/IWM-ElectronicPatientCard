@@ -1,6 +1,7 @@
 import React from "react";
 import Table from "react-bootstrap/Table";
 import Card from "react-bootstrap/Card";
+import ContactDetailsEdit from "./Edit/ContactDetailsEdit";
 
 class TelecomInformation extends React.Component {
   createList = () => {
@@ -20,7 +21,8 @@ class TelecomInformation extends React.Component {
       // }
       var key = 0;
       return telecom.map((element) => {
-        return element.getHtml('PatientTelecom'+key++);
+        var extra = this.props.fhirClient.patientData.patient.isCurrentTheLast() ? <ContactDetailsEdit mode="edit" fhirClient={this.props.fhirClient} currentTelecom={element} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/> : null;
+        return element.getHtml('PatientTelecom'+key++, extra);
       });
     }
   };
@@ -29,7 +31,7 @@ class TelecomInformation extends React.Component {
     return (
       <Card>
         <Card.Title className="text-center mt-4">
-          <span className="h2">Contact details</span>
+          <div><span className="h2">Contact details <ContactDetailsEdit mode="add" fhirClient={this.props.fhirClient} currentTelecom={null} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/></span></div>
         </Card.Title>
         <Card.Body>
           <Table>

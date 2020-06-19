@@ -63,7 +63,7 @@ class MaritalStatusEdit extends React.Component {
     const newCode = this.state.newMaritalStatusCode;
     const newText = MaritalStatusModel.maritalStatusCodes[newCode];
     const patch = [{
-      op: "add",
+      op: "replace",
       path: "/maritalStatus",
       value: {
         // In synthea dataset both text and display are the same as code but on update we're changing them to an actual text representation
