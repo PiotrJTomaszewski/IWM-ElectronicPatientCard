@@ -1,24 +1,27 @@
 import React from "react";
 import Pagination from "react-bootstrap/Pagination";
-class PatientVersionControl extends React.Component {
+class VersionControl extends React.Component {
   constructor(props) {
     super(props);
-    var pages = this.getVersionPages(this.props.fhirClient.patientData.patient.versionNo, this.props.currentPatientVersion);
+    var pages = this.getVersionPages(this.props.multiverModel.versionNo, this.props.currentModelVersion);
     this.state = {
+      multiverModel: this.props.multiverModel,
       fhirClient: this.props.fhirClient,
-      activePage: this.props.currentPatientVersion,
+      activePage: this.props.currentModelVersion,
       pagesButtons: pages,
     };
   }
 
   componentDidUpdate(oldProps) {
-    if (oldProps.currentPatientVersion !== this.props.currentPatientVersion) {
+    if (oldProps.currentModelVersion !== this.props.currentModelVersion) {
       var pages = this.getVersionPages(
-        this.props.fhirClient.patientData.patient.versionNo,
-        this.props.currentPatientVersion
+        this.props.multiverModel.versionNo,
+        this.props.currentModelVersion
       );
       this.setState({
-        activePage: this.props.currentPatientVersion,
+        multiverModel: this.props.multiverModel,
+        fhirClient: this.props.fhirClient,
+        activePage: this.props.currentModelVersion,
         pagesButtons: pages,
       });
     }
@@ -35,7 +38,7 @@ class PatientVersionControl extends React.Component {
       }
     }
     if (page) {
-      var newPage = this.state.fhirClient.patientData.patient.switchToVersion(
+      var newPage = this.state.multiverModel.switchToVersion(
         page
       );
       this.props.parentOnVersionChangeHandle(newPage);
@@ -102,11 +105,11 @@ class PatientVersionControl extends React.Component {
         </div>
         <div className="ml-auto">
           <span>Last modified </span>
-          <span>{new Date(this.state.fhirClient.patientData.patient.getCurrent().meta.lastUpdated).toLocaleString("en-US")}</span>
+          <span>{new Date(this.state.multiverModel.getCurrent().meta.lastUpdated).toLocaleString("en-US")}</span>
         </div>
       </div>
     );
   }
 }
 
-export default PatientVersionControl;
+export default VersionControl;

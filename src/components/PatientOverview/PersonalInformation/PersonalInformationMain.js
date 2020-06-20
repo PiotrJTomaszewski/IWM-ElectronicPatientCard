@@ -8,7 +8,7 @@ import TelecomInformation from "./TelecomInformation";
 import AddressInformation from "./AddressInformation";
 import PatientHeader from "./PatientHeader";
 import IdentifiersList from "./IdentifiersList/IdentifiersList";
-import PatientVersionControl from "./PatientVersionControl";
+import VersionControl from "../../VersionControl";
 // import ContactList from "./ContactList/ContactList";
 
 class PersonalInformationMain extends React.Component {
@@ -56,7 +56,7 @@ class PersonalInformationMain extends React.Component {
           <IdentifiersList fhirClient={this.state.fhirClient} />
           {/* <ContactList patient={this.props.patient} /> */}
         </Container>
-        <PatientVersionControl fhirClient={this.state.fhirClient} currentPatientVersion={this.state.currentPatientVersion} parentOnVersionChangeHandle={this.patientVersionChangeHandle}/>
+        <VersionControl fhirClient={this.state.fhirClient} multiverModel={this.state.fhirClient.patientData.patient} currentModelVersion={this.state.currentPatientVersion} parentOnVersionChangeHandle={this.patientVersionChangeHandle}/>
       </Container>
     );
   }

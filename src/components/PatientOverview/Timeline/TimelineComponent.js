@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import { capitalizeFirstLetter } from "../../../Helpers";
 import RawHtml from "../../RawHtml";
 import ObservationEdit from "./Edit/ObservationEdit";
+import ObservationModalBody from "./ObservationModalBody";
 
 import "./Timeline.css";
 
@@ -62,29 +63,6 @@ class TimelineComponent extends React.Component {
     );
   }
 
-  getObservationModalBody(observation) {
-    return (
-      <dl>
-        <dt>Status</dt>
-        <dd>{capitalizeFirstLetter(observation.status)}</dd>
-        <dt>Issued</dt>
-        <dd>
-          {observation.issued
-            ? new Date(observation.issued).toLocaleString("en-US")
-            : ""}
-        </dd>
-        <dt>Effective Date Time</dt>
-        <dd>
-          {observation.effectiveDateTime
-            ? new Date(observation.effectiveDateTime).toLocaleString("en-US")
-            : ""}
-        </dd>
-        <dt>Value</dt>
-        <dd>{observation.getValueText(false)}</dd>
-      </dl>
-    );
-  }
-
   createModal(item, key) {
     var modalTitle;
     var modalHeader;
@@ -107,7 +85,7 @@ class TimelineComponent extends React.Component {
           />
         </div>
       );
-      modalBody = this.getObservationModalBody(currentModel);
+      modalBody = <ObservationModalBody fhirClient={this.props.fhirClient} multiverModel={this.props.fhirClient.patientData.observations[item.localId]} />;
     } else {
       // Medication Request
       currentModel = this.props.fhirClient.patientData.medicationRequests[

@@ -8,7 +8,6 @@ import ModalWithButton from "../ModalWithButton";
 var Immutable = require("seamless-immutable");
 
 class TimelineMain extends React.Component {
-
   constructor(props) {
     super(props);
     this.groups = [
