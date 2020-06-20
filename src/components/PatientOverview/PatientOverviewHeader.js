@@ -20,7 +20,6 @@ class PatientOverviewHeader extends React.Component {
           <Nav.Link eventKey="tab-patient-overview">Patient overview</Nav.Link>
           <Nav.Link eventKey="tab-timeline">Timeline</Nav.Link>
           <Nav.Link eventKey="tab-graphs">Graphs</Nav.Link>
-          <Nav.Link eventKey="tab-debug">Debug menu</Nav.Link>
         </Nav>
       </Navbar>
     );

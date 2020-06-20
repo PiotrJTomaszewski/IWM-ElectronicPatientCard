@@ -26,7 +26,6 @@ class DateRangeComponent extends React.Component {
   }
 
   onChange = (selectionRange) => {
-    console.log(selectionRange);
     this.props.parentOnChange([
       selectionRange.selection.startDate,
       selectionRange.selection.endDate,

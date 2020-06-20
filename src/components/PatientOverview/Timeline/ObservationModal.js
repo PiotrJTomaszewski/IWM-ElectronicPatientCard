@@ -9,7 +9,6 @@ import ObservationEdit from "./Edit/ObservationEdit";
 class ObservationModal extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
     this.state = {
       currentVersion: this.props.multiverModel.currentVersion,
       multiverObservation: this.props.multiverModel,

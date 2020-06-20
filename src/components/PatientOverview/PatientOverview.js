@@ -2,7 +2,6 @@ import React from "react";
 
 import Loading from "../Loading";
 import PersonalInformationMain from "./PersonalInformation/PersonalInformationMain";
-import DebugArea from "./DebugArea";
 import PatientOverviewHeader from "./PatientOverviewHeader";
 import TimelineMain from "./Timeline/TimelineMain";
 import GraphsMain from "./Graphs/GraphsMain";
@@ -89,10 +88,10 @@ class PatientOverview extends React.Component {
           <GraphsMain fhirClient={this.state.fhirClient} />
         );
         break;
-      case "tab-debug":
-        selectedPageComponent = (<div></div>)
+      // case "tab-debug":
+        // selectedPageComponent = (<div></div>)
         // selectedPageComponent = <DebugArea patient={this.state.patient} />;
-        break;
+        // break;
       default:
         console.log("Invalid tab selected" + this.state.selectedTab);
         break;

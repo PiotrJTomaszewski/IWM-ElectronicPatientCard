@@ -169,6 +169,7 @@ export default class FhirClient {
     })
       .done((data) => {
         var newVersion;
+        var localId;
         switch(data.resourceType) {
           case "Patient":
             var newPatient = new PatientModel(data);
@@ -178,26 +179,24 @@ export default class FhirClient {
           case "Observation":
             var newObservation = new ObservationModel(data);
             newVersion = newObservation.meta.versionId;
-            var localId;
-            for (var i=0; i<this.patientData.observations.length; i++) {
+            for (let i=0; i<this.patientData.observations.length; i++) {
               if (this.patientData.observations[i].getLast().id === newObservation.id) {
                 localId = i;
                 break;
               }
             }
-            this.patientData.observations[i].addVersion(newVersion, newObservation);
+            this.patientData.observations[localId].addVersion(newVersion, newObservation);
             break;
           case "MedicationRequest":
             var newRequest = new MedicationRequestModel(data);
             newVersion = newRequest.meta.versionId;
-            var localId;
-            for (var i=0; i<this.patientData.medicationRequests.length; i++) {
+            for (let i=0; i<this.patientData.medicationRequests.length; i++) {
               if (this.patientData.medicationRequests[i].getLast().id === newRequest.id) {
                 localId = i;
                 break;
               }
             }
-            this.patientData.medicationRequests[i].addVersion(newVersion, newRequest);
+            this.patientData.medicationRequests[localId].addVersion(newVersion, newRequest);
             break;
           default:
             break;

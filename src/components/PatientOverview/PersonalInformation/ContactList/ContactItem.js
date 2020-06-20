@@ -12,7 +12,6 @@ class ContactItem extends React.Component {
     }
     //tooltip, buttonText, modalTitle, modalTableHeaderRow, modalTableBody
     var telecom = this.props.contact.getTelecoms();
-    console.log(telecom);
     var telecomHtml = "Unknown";
     if (telecom) {
       if (telecom.length > 0 && telecom[0].getRank()) {
@@ -20,7 +19,6 @@ class ContactItem extends React.Component {
           return a.getRank() - b.getRank();
         });
       }
-      console.log('e', telecom);
       var key = 0;
       var telecomHtmls = telecom.map((element) => {
         return (

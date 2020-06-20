@@ -1,7 +1,6 @@
 import React from "react";
 import Timeline from "react-visjs-timeline";
 
-import { capitalizeFirstLetter } from "../../../Helpers";
 import ObservationModal from "./ObservationModal";
 import MedicationRequestModal from "./MedicationRequestModal";
 import "./Timeline.css";
@@ -41,7 +40,6 @@ class TimelineComponent extends React.Component {
   }
 
   createModal(item, key) {
-    var currentModel;
     if (item.type === "Observation") {
     return (
       <div key={key}>

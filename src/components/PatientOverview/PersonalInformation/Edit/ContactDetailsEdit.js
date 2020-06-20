@@ -161,7 +161,6 @@ class ContactDetailsEdit extends React.Component {
   };
 
   render() {
-    var patient = this.props.fhirClient.patientData.patient.getCurrent();
     var nextOptionKey = 0;
     return (
       <div className="ml-auto">

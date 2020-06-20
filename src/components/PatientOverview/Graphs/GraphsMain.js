@@ -1,10 +1,6 @@
 import React from "react";
 import Form from "react-bootstrap/Form";
-import FormCheck from "react-bootstrap/FormCheck";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
 
 import GraphComponent from "./GraphComponent";
 import DateRangeComponent from "../../DateRangeComponent";
@@ -20,10 +16,6 @@ class GraphsMain extends React.Component {
     dataToPlot: {},
     dateRange: null,
   };
-
-  constructor(props) {
-    super(props);
-  }
 
   getDataTypeOptions(codes) {
     var options = [];
@@ -104,7 +96,6 @@ class GraphsMain extends React.Component {
   };
 
   dateRangeComponentOnChange = (newDateRange) => {
-    console.log(newDateRange);
     this.setState((oldState) => {
       return {
         dateRange: newDateRange ? newDateRange : oldState.defaultDateRange,

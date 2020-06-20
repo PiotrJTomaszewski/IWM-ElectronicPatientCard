@@ -1,6 +1,5 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 
 import IdentifiersItem from "./IdentifiersItem";

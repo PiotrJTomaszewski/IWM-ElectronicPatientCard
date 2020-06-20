@@ -10,7 +10,6 @@ import MedicationRequestEdit from "./Edit/MedicationRequestEdit";
 class MedicationRequestModal extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
     this.state = {
       currentVersion: this.props.multiverModel.currentVersion,
       multiverRequest: this.props.multiverModel,

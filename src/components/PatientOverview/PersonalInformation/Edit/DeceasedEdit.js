@@ -123,7 +123,6 @@ class DeceasedEdit extends React.Component {
 
   render() {
     var patient = this.props.fhirClient.patientData.patient.getCurrent();
-    console.log(patient.isDeceased());
     return (
       <div className="ml-auto">
         <Button

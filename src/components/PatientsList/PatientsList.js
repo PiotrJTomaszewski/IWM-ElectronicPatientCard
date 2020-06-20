@@ -30,7 +30,6 @@ class PatientsList extends React.Component {
   }
 
   onDownloadSuccess() {
-    console.log(this.state.fhirClient.patientList);
     var patients = this.state.fhirClient.patientList.map((patientModel) => {
       return {
         id: patientModel.id,
@@ -73,7 +72,6 @@ class PatientsList extends React.Component {
   }
 
   filterNames() {
-    console.log('filter');
     var currentFilter = $("#filter-box").val().toLowerCase();
     var filteredComponents = this.state.patients
       .filter((patient) => {

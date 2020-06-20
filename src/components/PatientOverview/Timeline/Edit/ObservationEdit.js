@@ -95,7 +95,7 @@ class ContactDetailsEdit extends React.Component {
   valueChangeHandle = (event) => {
     event.persist();
     var newValue = parseFloat(event.target.value);
-    if (newValue === NaN) {
+    if (isNaN(newValue)) {
       return;
     }
     var fieldId;
