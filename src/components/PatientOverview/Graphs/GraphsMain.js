@@ -4,6 +4,7 @@ import FormCheck from "react-bootstrap/FormCheck";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
 
 import GraphComponent from "./GraphComponent";
 import DateRangeComponent from "../../DateRangeComponent";
@@ -38,7 +39,9 @@ class GraphsMain extends React.Component {
   }
 
   componentDidMount() {
-    var observations = this.props.fhirClient.patientData.observations;
+    var observations = this.props.fhirClient.patientData.observations.map(
+      (multiverObs) => multiverObs.getLast()
+    );
     if (observations && observations.length > 0) {
       var interestingData = observations.filter((obs) => {
         return obs.valueType === ObservationModel.valueType["valueQuantity"];
@@ -110,7 +113,6 @@ class GraphsMain extends React.Component {
   };
 
   dateRangeGraphOnChange = (newDateRange) => {
-    console.log(newDateRange);
     var left = newDateRange[0];
     var right = newDateRange[1];
 
