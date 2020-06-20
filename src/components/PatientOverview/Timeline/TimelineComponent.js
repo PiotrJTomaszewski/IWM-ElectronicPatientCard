@@ -43,13 +43,13 @@ class TimelineComponent extends React.Component {
     if (item.type === "Observation") {
     return (
       <div key={key}>
-        <ObservationModal modalHideHandle={this.modalHideHandle} modalShown={this.state.modalsShown[item.id]} fhirClient={this.props.fhirClient} multiverModel={this.props.fhirClient.patientData.observations[item.localId]} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/>;
+        <ObservationModal modalHideHandle={this.modalHideHandle} modalShown={this.state.modalsShown[item.id]} fhirClient={this.props.fhirClient} multiverModel={this.props.fhirClient.patientData.observations[item.localId]} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/>
       </div>
     );
     } else {
       return (
         <div key={key}>
-          <MedicationRequestModal modalHideHandle={this.modalHideHandle} modalShown={this.state.modalsShown[item.id]} fhirClient={this.props.fhirClient} multiverModel={this.props.fhirClient.patientData.medicationRequests[item.localId]} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/>;
+          <MedicationRequestModal modalHideHandle={this.modalHideHandle} modalShown={this.state.modalsShown[item.id]} fhirClient={this.props.fhirClient} multiverModel={this.props.fhirClient.patientData.medicationRequests[item.localId]} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/>
         </div>
       )
     }
@@ -95,7 +95,7 @@ class TimelineComponent extends React.Component {
           groups={this.props.groups}
           clickHandler={this.clickHandler}
         />
-        {this.state.modals}
+        <div className="hidden">{this.state.modals}</div>
       </div>
     );
   }

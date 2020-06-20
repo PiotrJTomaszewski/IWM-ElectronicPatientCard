@@ -26,3 +26,7 @@
 .pers-inf-field-differ {
     background-color: #28a7455c;
 }
+
+.hidden {
+    display: none;
+}
