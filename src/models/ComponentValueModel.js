@@ -5,6 +5,7 @@ import ValueQuantityModel from "./ValueQuantityModel";
 export default class ComponentValueModel extends Model {
     constructor(resource) {
         super();
+        this.rawResource = resource;
         this.code = new CodingModel(this._getPath(resource, "code"));
         this.text = this._getPath(resource, "code.text");
         this.valueQuantity = new ValueQuantityModel(this._getPath(resource, "valueQuantity"));

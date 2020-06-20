@@ -5,6 +5,7 @@ import Button from "react-bootstrap/Button";
 
 import { capitalizeFirstLetter } from "../../../Helpers";
 import RawHtml from "../../RawHtml";
+import ObservationEdit from "./Edit/ObservationEdit";
 
 import "./Timeline.css";
 
@@ -90,15 +91,31 @@ class TimelineComponent extends React.Component {
     var modalBody;
     var currentModel;
     if (item.type === "Observation") {
-      currentModel = this.props.fhirClient.patientData.observations[item.localId].getCurrent();
-      modalTitle =  currentModel.code.text
-      modalHeader = <div className="d-flex">{currentModel.category.toText()}<i className="fas fa-user-md fa-2x ml-3"></i></div>
-      modalBody =  this.getObservationModalBody(currentModel)
-    } else { // Medication Request
-      currentModel = this.props.fhirClient.patientData.medicationRequests[item.localId].getCurrent();
-      modalTitle = currentModel.toText()
-      modalHeader = <i className="fas fa-pills fa-2x"></i>
-      modalBody = this.getRequestModalBody(currentModel)
+      currentModel = this.props.fhirClient.patientData.observations[
+        item.localId
+      ].getCurrent();
+      modalTitle = currentModel.code.text;
+      modalHeader = (
+        <div className="d-flex">
+          {currentModel.category.toText()}
+          <i className="fas fa-user-md fa-2x ml-3"></i>
+          <ObservationEdit
+            fhirClient={this.props.fhirClient}
+            currentObservation={currentModel}
+            localId={item.localId}
+            parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}
+          />
+        </div>
+      );
+      modalBody = this.getObservationModalBody(currentModel);
+    } else {
+      // Medication Request
+      currentModel = this.props.fhirClient.patientData.medicationRequests[
+        item.localId
+      ].getCurrent();
+      modalTitle = currentModel.toText();
+      modalHeader = <i className="fas fa-pills fa-2x"></i>;
+      modalBody = this.getRequestModalBody(currentModel);
     }
     return (
       <div key={key}>

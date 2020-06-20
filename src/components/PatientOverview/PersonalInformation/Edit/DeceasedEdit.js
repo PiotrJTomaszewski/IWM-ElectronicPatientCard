@@ -9,8 +9,8 @@ class DeceasedEdit extends React.Component {
     super(props);
     const currentDeceasedBoolean = this.props.fhirClient.patientData.patient.getCurrent()
       .deceasedBoolean;
-    const currentDeceasedDateTime = this.props.fhirClient.patientData.patient.getCurrent()
-      .deceasedDateTime;
+    const currentDeceasedDateTime = new Date(this.props.fhirClient.patientData.patient.getCurrent()
+      .deceasedDateTime);
     const newIsDeceased = this.props.fhirClient.patientData.patient
       .getCurrent()
       .isDeceased();
@@ -40,7 +40,7 @@ class DeceasedEdit extends React.Component {
         .isDeceased();
       this.setState({
         newDeceasedBoolean: currentDeceasedBoolean,
-        newDeceasedDateTime: currentDeceasedDateTime,
+        newDeceasedDateTime: new Date(currentDeceasedDateTime),
         newIsDeceased: newIsDeceased,
       });
     }
@@ -169,7 +169,7 @@ class DeceasedEdit extends React.Component {
                     <Form.Label>Deceased date time</Form.Label>
                     <br />
                     <DateTimePicker
-                      format="y-MM-dd h:mm:ss a"
+                      format="MM-dd-y h:mm:ss a"
                       maxDate={new Date()}
                       value={this.state.newDeceasedDateTime}
                       onChange={this.deceasedDateTimeChangeHandle}

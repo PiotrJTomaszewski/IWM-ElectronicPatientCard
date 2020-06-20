@@ -175,6 +175,17 @@ export default class FhirClient {
             newVersion = newPatient.meta.versionId;
             this.patientData.patient.addVersion(newVersion, newPatient);
             break;
+          case "Observation":
+            var newObservation = new ObservationModel(data);
+            newVersion = newObservation.meta.versionId;
+            var localId;
+            for (var i=0; i<this.patientData.observations.length; i++) {
+              if (this.patientData.observations[i].getLast().id === newObservation.id) {
+                localId = i;
+                break;
+              }
+            }
+            this.patientData.observations[i].addVersion(newVersion, newObservation);
           default:
             break;
         }

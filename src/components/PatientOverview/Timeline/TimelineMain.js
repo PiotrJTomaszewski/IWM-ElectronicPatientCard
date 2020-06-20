@@ -56,6 +56,10 @@ class TimelineMain extends React.Component {
     });
   }
 
+  onVersionChangeHandle = () => {
+    this.forceUpdate();
+  }
+
   fillMedicationGroups() {
     var medicationRequests = this.props.fhirClient.patientData.medicationRequests;
     var medicationCodes = [];
@@ -152,7 +156,7 @@ class TimelineMain extends React.Component {
         timelineItem: {
           id: observation.id,
           group: observation.code.coding.code,
-          content: observation.getValueText(true),
+          content: observation.getValueText(true, false),
           start: datetime,
           type: "point",
         },
@@ -216,6 +220,7 @@ class TimelineMain extends React.Component {
             groups={this.state.groups}
             items={this.state.items}
             fhirClient={this.props.fhirClient}
+            parentOnVersionChangeHandle={this.onVersionChangeHandle}
           />
         </div>
       );

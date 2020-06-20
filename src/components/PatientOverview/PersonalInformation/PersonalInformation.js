@@ -117,7 +117,7 @@ function PersonalInformation(props) {
                     : ""
                 }
               >
-                {patient.birthDate}
+                {new Date(patient.birthDate).toLocaleDateString("en-US")}
               </td>
             </tr>
             <tr>

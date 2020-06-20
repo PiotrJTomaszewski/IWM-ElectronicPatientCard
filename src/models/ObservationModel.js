@@ -3,8 +3,21 @@ import CodingModel from "./CodingModel";
 import MetaModel from "./MetaModel";
 import ValueQuantityModel from "./ValueQuantityModel";
 import ComponentValueModel from "./ComponentValueModel";
+import React from "react";
+
+import RawHtml from "../components/RawHtml";
 
 export default class ObservationModel extends Model {
+  static statusCodes = {
+    registered: {code: "registered", display: "Registered"},
+    preliminary: {code: "preliminary", display: "Preliminary"},
+    final: {code: "final", display: "Final"},
+    amended: {code: "amended", display: "Amended"},
+    corrected: {code: "corrected", display: "Corrected"},
+    cancelled: {code: "cancelled", display: "Cancelled"},
+    enteredInError: {code: "entered-in-error", display: "Entered in Error"},
+    unknown: {code: "Unknown", display: "Unknown"}
+  }
   static valueType = {
     valueQuantity: 0,
     valueCodeableConcept: 1,
@@ -22,6 +35,7 @@ export default class ObservationModel extends Model {
     this.meta = new MetaModel(this._getPath(resource, "meta"));
     this.status = this._getPath(resource, "status");
     this.valueType = undefined;
+    this.components = [];
     if (this._getPath(resource, "valueQuantity")) {
       this.valueType = ObservationModel.valueType["valueQuantity"];
       this.valueQuantity = new ValueQuantityModel(resource.valueQuantity);
@@ -40,7 +54,7 @@ export default class ObservationModel extends Model {
     this.effectiveDateTime = this._getPath(resource, "effectiveDateTime");
   }
 
-  getValueText(roundNumbers=false) {
+  getValueText(roundNumbers=false, longer=true) {
     var val;
     switch (this.valueType) {
       case ObservationModel.valueType["valueQuantity"]:
@@ -50,13 +64,40 @@ export default class ObservationModel extends Model {
         val = this.valueCodeableConcept.text;
         break;
       case ObservationModel.valueType["valueComponents"]:
-        val = `${this.components
-          .map((comp) => comp.getValue(roundNumbers))
-          .join("/")} ${this.components[0].getUnit()}`;
+        if (longer) {
+          val = this.components
+            .map((comp) => comp.text + ": " + comp.getValue(roundNumbers) + " " + comp.getUnit())
+            .join("/");
+          val = this.components.map((comp) => comp.text).join("/");
+          val += "<br/>";
+          val += this.components.map((comp) => comp.getValue(roundNumbers) + " " + comp.getUnit()).join("/");
+          val = <RawHtml>{val}</RawHtml>;
+        } else {
+          val = this.components.map((comp) => comp.getValue(roundNumbers) + " " + comp.getUnit()).join("/");
+        }
         break;
       default:
         break;
     }
     return val;
   }
+
+  getValue() {
+    var val;
+    switch (this.valueType) {
+      case ObservationModel.valueType["valueQuantity"]:
+        val = this.valueQuantity.value;
+        break;
+      case ObservationModel.valueType["valueCodeableConcept"]:
+        // Not implemented
+        break;
+      case ObservationModel.valueType["valueComponents"]:
+        val = this.components.map((comp) => comp.getValue(false));
+        break;
+      default:
+        break;
+    }
+    return val;
+  }
+
 }
