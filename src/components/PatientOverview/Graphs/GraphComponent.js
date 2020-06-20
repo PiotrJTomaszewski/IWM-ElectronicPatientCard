@@ -13,10 +13,18 @@ import {
 class GraphComponent extends React.Component {
   constructor(props) {
     super(props);
+    let yValues = this.props.data.coords.map((coord)=>coord.y);
+    var dataMin = yValues[0];
+    var dataMax = yValues[0];
+    for (var y of yValues) {
+      if (y > dataMax) dataMax = y;
+      else if (y < dataMin) dataMin = y;
+    }
     this.state = {
       data: this.props.data,
       hoverValue: null,
-      zoomWithMouseEnabled: false
+      zoomWithMouseEnabled: false,
+      yDomain: [dataMin-(0.1*dataMin), dataMax+(0.1*dataMax)],
     };
   }
 
@@ -35,9 +43,17 @@ class GraphComponent extends React.Component {
 
   componentDidUpdate(oldProps) {
     if (oldProps.data !== this.props.data) {
+      let yValues = this.props.data.coords.map((coord)=>coord.y);
+      var dataMin = yValues[0];
+      var dataMax = yValues[0];
+      for (var y of yValues) {
+        if (y > dataMax) dataMax = y;
+        else if (y < dataMin) dataMin = y;
+      }
       this.setState({
         data: this.props.data,
-        crosshairValues: [],
+        hoverValue: null,
+        yDomain: [dataMin-(0.1*dataMin), dataMax+(0.1*dataMax)],
       });
     }
   }
@@ -54,7 +70,8 @@ class GraphComponent extends React.Component {
     if (event && event.target) {
       this.setState((oldState) => {
         return {
-          zoomWithMouseEnabled: !oldState.zoomWithMouseEnabled
+          zoomWithMouseEnabled: !oldState.zoomWithMouseEnabled,
+          hoverValue: null
         }
       })
     }
@@ -73,6 +90,9 @@ class GraphComponent extends React.Component {
               this.props.dateRange[0],
               this.props.dateRange[1],
             ]
+          }
+          yDomain={
+            this.state.yDomain
           }
           margin={{ bottom: 100 }}
         >
