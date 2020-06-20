@@ -4,6 +4,28 @@ import MetaModel from "./MetaModel";
 import DosageInstructionModel from "./DosageInstructionModel";
 
 export default class MedicationRequestModel extends Model {
+  static statusCodes = {
+    active: {code: "active", display: "Active"},
+    onHold: {code: "on-hold", display: "On Hold"},
+    cancelled: {code: "cancelled", display: "Cancelled"},
+    completed: {code: "completed", display: "Completed"},
+    enteredInError: {code: "entered-in-error", display: "Entered in Error"},
+    stopped: {code: "stopped", display: "Stopped"},
+    draft: {code: "draft", display: "Draft"},
+    unknown: {code: "unknown", display: "Unknown"},
+  }
+
+  static intentCodes = {
+    proposal: {code: "proposal", display: "Proposal"},
+    plan: {code: "plan", display: "Plan"},
+    order: {code: "order", display: "Order"},
+    originalOrder: {code: "original-order", display: "Original Order"},
+    reflexOrder: {code: "reflex-order", display: "Redlex Order"},
+    fillerOrder: {code: "filler-order", display: "Filler Order"},
+    instanceOrder: {code: "instance-order", display: "Instance Order"},
+    option: {code: "option", display: "Option"},
+  }
+  
   constructor(resource) {
     super();
     this.authoredOn = this._getPath(resource, "authoredOn");

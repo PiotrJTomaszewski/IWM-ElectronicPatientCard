@@ -36,27 +36,21 @@ class ContactDetailsEdit extends React.Component {
   // }
 
   modalShowHandle = () => {
-    this.setState((state) => {
-      return {
-        modalShown: true,
-      };
+    this.setState({
+      modalShown: true,
     });
   };
 
   modalCancelHandle = () => {
-    this.setState((state) => {
-      return {
-        modalShown: false,
-      };
+    this.setState({
+      modalShown: false,
     });
   };
 
   onUpdateSuccess = (newVersion) => {
     this.props.parentOnVersionChangeHandle(newVersion);
-    this.setState((state) => {
-      return {
-        modalShown: false,
-      };
+    this.setState({
+      modalShown: false,
     });
   };
 
@@ -337,7 +331,6 @@ class ContactDetailsEdit extends React.Component {
                   <br />
                   <DateTimePicker
                     format="MM-dd-y h:mm:ss a"
-                    maxDate={new Date()}
                     value={this.state.newObservation.effectiveDateTime}
                     onChange={this.effectiveDateTimeChangeHandle}
                   />

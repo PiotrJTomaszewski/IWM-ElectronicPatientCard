@@ -36,7 +36,7 @@ export default class MultiVersionModel {
     if (this.modelVersions[this.currentVersion - 1]) {
       prevVal = this.modelVersions[this.currentVersion - 1][fieldName];
     }
-    if (fieldName === "issued" || fieldName === "effectiveDateTime") {
+    if (fieldName === "issued" || fieldName === "effectiveDateTime" || fieldName === "authoredOn") {
       currVal = new Date(currVal);
       prevVal = new Date(prevVal);
     }

@@ -186,6 +186,19 @@ export default class FhirClient {
               }
             }
             this.patientData.observations[i].addVersion(newVersion, newObservation);
+            break;
+          case "MedicationRequest":
+            var newRequest = new MedicationRequestModel(data);
+            newVersion = newRequest.meta.versionId;
+            var localId;
+            for (var i=0; i<this.patientData.medicationRequests.length; i++) {
+              if (this.patientData.medicationRequests[i].getLast().id === newRequest.id) {
+                localId = i;
+                break;
+              }
+            }
+            this.patientData.medicationRequests[i].addVersion(newVersion, newRequest);
+            break;
           default:
             break;
         }

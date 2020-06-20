@@ -1,13 +1,9 @@
 import React from "react";
 import Timeline from "react-visjs-timeline";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 
 import { capitalizeFirstLetter } from "../../../Helpers";
-import RawHtml from "../../RawHtml";
-import ObservationEdit from "./Edit/ObservationEdit";
-import ObservationModalBody from "./ObservationModalBody";
-
+import ObservationModal from "./ObservationModal";
+import MedicationRequestModal from "./MedicationRequestModal";
 import "./Timeline.css";
 
 class TimelineComponent extends React.Component {
@@ -44,82 +40,21 @@ class TimelineComponent extends React.Component {
     });
   }
 
-  getRequestModalBody(request) {
-    return (
-      <dl>
-        <dt>Authored On</dt>
-        <dd>{new Date(request.authoredOn).toLocaleString("en-US")}</dd>
-        <dt>Intent</dt>
-        <dd>{capitalizeFirstLetter(request.intent)}</dd>
-        <dt>Dosage</dt>
-        <dd>
-          <RawHtml>{request.getDosageHtml()}</RawHtml>
-        </dd>
-        <dt>Status</dt>
-        <dd>{capitalizeFirstLetter(request.status)}</dd>
-        <dt>Requester</dt>
-        <dd>{request.requester}</dd>
-      </dl>
-    );
-  }
-
   createModal(item, key) {
-    var modalTitle;
-    var modalHeader;
-    var modalBody;
     var currentModel;
     if (item.type === "Observation") {
-      currentModel = this.props.fhirClient.patientData.observations[
-        item.localId
-      ].getCurrent();
-      modalTitle = currentModel.code.text;
-      modalHeader = (
-        <div className="d-flex">
-          {currentModel.category.toText()}
-          <i className="fas fa-user-md fa-2x ml-3"></i>
-          <ObservationEdit
-            fhirClient={this.props.fhirClient}
-            currentObservation={currentModel}
-            localId={item.localId}
-            parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}
-          />
-        </div>
-      );
-      modalBody = <ObservationModalBody fhirClient={this.props.fhirClient} multiverModel={this.props.fhirClient.patientData.observations[item.localId]} />;
-    } else {
-      // Medication Request
-      currentModel = this.props.fhirClient.patientData.medicationRequests[
-        item.localId
-      ].getCurrent();
-      modalTitle = currentModel.toText();
-      modalHeader = <i className="fas fa-pills fa-2x"></i>;
-      modalBody = this.getRequestModalBody(currentModel);
-    }
     return (
       <div key={key}>
-        <Modal
-          show={this.state.modalsShown[item.id]}
-          onHide={this.modalHideHandle}
-          animation={false}
-          size="lg"
-        >
-          <Modal.Header>
-            <Modal.Title>{modalTitle}</Modal.Title>
-            {modalHeader}
-          </Modal.Header>
-          <Modal.Body>{modalBody}</Modal.Body>
-          <Modal.Footer>
-            <Button
-              variant="secondary"
-              onClick={this.modalHideHandle}
-              data-id={item.id}
-            >
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <ObservationModal modalHideHandle={this.modalHideHandle} modalShown={this.state.modalsShown[item.id]} fhirClient={this.props.fhirClient} multiverModel={this.props.fhirClient.patientData.observations[item.localId]} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/>;
       </div>
     );
+    } else {
+      return (
+        <div key={key}>
+          <MedicationRequestModal modalHideHandle={this.modalHideHandle} modalShown={this.state.modalsShown[item.id]} fhirClient={this.props.fhirClient} multiverModel={this.props.fhirClient.patientData.medicationRequests[item.localId]} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/>;
+        </div>
+      )
+    }
   }
 
   modalHideHandle = (event) => {
