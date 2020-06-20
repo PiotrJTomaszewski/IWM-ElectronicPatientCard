@@ -43,6 +43,7 @@ export default class PatientModel extends Model {
     }
     this.maritalStatus = new MaritalStatusModel(this._getPath(resource, "maritalStatus"));
     this.multipleBirthBoolean = this._getPath(resource, "multipleBirthBoolean");
+    this.multipleBirthInteger = this._getPath(resource, "multipleBirthInteger");
     var commTmp = this._getPath(resource, "communication");
     if (commTmp !== undefined) {
       this.communication = commTmp.map((entry) => new CommunicationModel(entry));
@@ -98,6 +99,9 @@ export default class PatientModel extends Model {
     if (this.deceasedDateTime) {
       return true;
     }
+    if (this.deceasedBoolean === true) {
+      return true;
+    }
     if (this.deceasedBoolean === false) {
       return false;
     }
@@ -106,5 +110,18 @@ export default class PatientModel extends Model {
 
   getFreeLocalTelecomId() {
     return Math.max(this.telecoms.map((element) => element.localId))+1;
+  }
+
+  isPartOfMultipleBirthText() {
+    if (this.multipleBirthInteger) {
+      return `Yes, birth order: ${this.multipleBirthInteger}`
+    }
+    if (this.multipleBirthBoolean === true) {
+      return "Yes";
+    }
+    if (this.multipleBirthBoolean === false) {
+      return "No";
+    }
+    return "Unspecified";
   }
 }

@@ -38,12 +38,12 @@ class MedicationRequestModal extends React.Component {
           <Modal.Title>{this.state.currentRequest.toText()}</Modal.Title>
           <div className="d-flex">
             <i className="fas fa-pills fa-2x"></i>
-            <MedicationRequestEdit
+            {this.state.multiverRequest.isCurrentTheLast() ? <MedicationRequestEdit
               fhirClient={this.props.fhirClient}
               currentRequest={this.state.currentRequest}
               localId={this.state.multiverRequest.localId}
               parentOnVersionChangeHandle={this.versionChangeHandle}
-            />
+            /> : null}
           </div>
         </Modal.Header>
         <Modal.Body>

@@ -73,7 +73,7 @@ export default class TelecomModel extends Model {
     this.localId = localId;
   }
 
-  getHtml(key, extra, asTableRow = true) {
+  getHtml(key, extra, asTableRow = true, className="") {
     var use = {
       isClass: false,
       text: "Other",
@@ -158,7 +158,7 @@ export default class TelecomModel extends Model {
     var value = this.value;
     if (asTableRow) {
       return (
-        <tr key={key} title={title}>
+        <tr key={key} title={title} className={className}>
           <td>
             <i className={systemImgClass}></i>{" "}
             {use.isClass ? <i className={use.text}></i> : use.text} {value}{" "}
@@ -170,7 +170,7 @@ export default class TelecomModel extends Model {
       return {
         title: title,
         html: (
-          <div key={key}>
+          <div key={key} className={className}>
             <i className={systemImgClass}></i>{" "}
             {use.isClass ? <i className={use.text}></i> : use.text} {value}{" "}
             {extra}

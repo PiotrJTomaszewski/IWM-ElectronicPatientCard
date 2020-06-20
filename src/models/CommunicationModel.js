@@ -9,7 +9,7 @@ export default class CommunicationModel extends Model {
         this.text = this._getPath(resource, "language.text");
     }
 
-    getTextOrDisplay() {
+    toText() {
         if (this.text !== undefined) {
             return this.text;
         }

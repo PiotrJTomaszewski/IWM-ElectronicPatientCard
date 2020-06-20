@@ -156,11 +156,7 @@ function PersonalInformation(props) {
                     : ""
                 }
               >
-                {patient.multipleBirthBoolean !== undefined
-                  ? patient.multipleBirthBoolean
-                    ? "Yes"
-                    : "No"
-                  : "Unspecified"}
+                {patient.isPartOfMultipleBirthText()}
               </td>
             </tr>
             <tr>
@@ -185,7 +181,7 @@ function PersonalInformation(props) {
             </tr>
             <tr>
               <th scope="col">Communication</th>
-              <td>TODO</td>
+              <td>{patient.communication.map((comm, index) => <div key={index}>{comm.toText()}</div>)}</td>
             </tr>
             <tr>
               <th scope="col">Race</th>

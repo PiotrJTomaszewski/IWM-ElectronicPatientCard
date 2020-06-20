@@ -20,9 +20,10 @@ class TelecomInformation extends React.Component {
       //   });
       // }
       var key = 0;
-      return telecom.map((element) => {
+      return telecom.map((element, index) => {
         var extra = this.props.fhirClient.patientData.patient.isCurrentTheLast() ? <ContactDetailsEdit mode="edit" fhirClient={this.props.fhirClient} currentTelecom={element} parentOnVersionChangeHandle={this.props.parentOnVersionChangeHandle}/> : null;
-        return element.getHtml('PatientTelecom'+key++, extra);
+        var rowClassName = this.props.fhirClient.patientData.patient.isDifferentFromPrev("telecoms", index) ? "pers-inf-field-differ" : "";
+        return element.getHtml('PatientTelecom'+key++, extra, true, rowClassName);
       });
     }
   };

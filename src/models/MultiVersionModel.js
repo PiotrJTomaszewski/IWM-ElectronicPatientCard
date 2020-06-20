@@ -24,7 +24,7 @@ export default class MultiVersionModel {
     return this.modelVersions[this.versionNo];
   }
 
-  isDifferentFromPrev(fieldName) {
+  isDifferentFromPrev(fieldName, fieldIndex=null) {
     if (this.currentVersion === 1) {
       return false;
     }
@@ -35,6 +35,10 @@ export default class MultiVersionModel {
     }
     if (this.modelVersions[this.currentVersion - 1]) {
       prevVal = this.modelVersions[this.currentVersion - 1][fieldName];
+    }
+    if (fieldIndex !== null) {
+      currVal = currVal[fieldIndex];
+      prevVal = prevVal[fieldIndex];
     }
     if (fieldName === "issued" || fieldName === "effectiveDateTime" || fieldName === "authoredOn") {
       currVal = new Date(currVal);

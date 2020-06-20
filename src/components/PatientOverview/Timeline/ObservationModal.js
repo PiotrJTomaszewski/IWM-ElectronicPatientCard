@@ -6,7 +6,6 @@ import { capitalizeFirstLetter } from "../../../Helpers";
 import VersionControl from "../../VersionControl";
 import ObservationEdit from "./Edit/ObservationEdit";
 
-
 class ObservationModal extends React.Component {
   constructor(props) {
     super(props);
@@ -31,16 +30,19 @@ class ObservationModal extends React.Component {
   render() {
     var modalTitle = this.state.currentObservation.code.text;
     var modalHeader = (
-        <div className="d-flex">
-          {this.state.currentObservation.category.toText()}
-          <i className="fas fa-user-md fa-2x ml-3"></i>
+      <div className="d-flex">
+        {this.state.currentObservation.category.toText()}
+        <i className="fas fa-user-md fa-2x ml-3"></i>
+        {this.state.multiverObservation.isCurrentTheLast() ? (
           <ObservationEdit
             fhirClient={this.props.fhirClient}
             currentObservation={this.state.currentObservation}
             localId={this.state.multiverObservation.localId}
             parentOnVersionChangeHandle={this.versionChangeHandle}
           />
-        </div>);
+        ) : null}
+      </div>
+    );
     return (
       <Modal
         show={this.props.modalShown}
