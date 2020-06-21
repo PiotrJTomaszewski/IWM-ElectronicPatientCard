@@ -100,4 +100,44 @@ export default class ObservationModel extends Model {
     return val;
   }
 
+  getCategoryLogo() {
+    var logoClass;
+    if (this.category) {
+      switch(this.category.code) {
+        case "social-history":
+          logoClass = "fas fa-book-medical";
+          break;
+        case "vital-signs":
+          logoClass = "fas fa-heartbeat";
+          break;
+        case "imaging":
+          logoClass = "fas fa-x-ray";
+          break;
+        case "laboratory":
+          logoClass = "fas fa-vial";
+          break;
+        case "procedure":
+          logoClass = "fas fa-procedures";
+          break;
+        case "survey":
+          logoClass = "fas fa-comment-medical";
+          break;
+        case "exam":
+          logoClass = "fas fa-stethoscope";
+          break;
+        case "therapy":
+          logoClass = "fas fa-medkit";
+          break;
+        case "activity":
+          logoClass = "fas fa-skiing-nordic";
+          break;
+        default:
+          break;
+      }
+    }
+    if (logoClass) {
+      return <i className={logoClass+" fa-2x ml-3"} title={this.category.toText()}></i>;
+    }
+    return this.category.toText();
+  }
 }

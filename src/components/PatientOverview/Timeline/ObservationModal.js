@@ -30,8 +30,7 @@ class ObservationModal extends React.Component {
     var modalTitle = this.state.currentObservation.code.text;
     var modalHeader = (
       <div className="d-flex">
-        {this.state.currentObservation.category.toText()}
-        <i className="fas fa-user-md fa-2x ml-3"></i>
+        {this.state.currentObservation.getCategoryLogo()}
         {this.state.multiverObservation.isCurrentTheLast() ? (
           <ObservationEdit
             fhirClient={this.props.fhirClient}
