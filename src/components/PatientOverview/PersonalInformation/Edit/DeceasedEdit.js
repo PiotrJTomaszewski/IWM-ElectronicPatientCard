@@ -9,8 +9,11 @@ class DeceasedEdit extends React.Component {
     super(props);
     const currentDeceasedBoolean = this.props.fhirClient.patientData.patient.getCurrent()
       .deceasedBoolean;
-    const currentDeceasedDateTime = new Date(this.props.fhirClient.patientData.patient.getCurrent()
+    var currentDeceasedDateTime = null;
+    if (this.props.fhirClient.patientData.patient.getCurrent().deceasedDateTime) {
+      currentDeceasedDateTime = new Date(this.props.fhirClient.patientData.patient.getCurrent()
       .deceasedDateTime);
+    }
     const newIsDeceased = this.props.fhirClient.patientData.patient
       .getCurrent()
       .isDeceased();
