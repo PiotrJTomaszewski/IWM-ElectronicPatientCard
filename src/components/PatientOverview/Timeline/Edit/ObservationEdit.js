@@ -16,7 +16,7 @@ class ContactDetailsEdit extends React.Component {
       currentObservation: this.props.currentObservation,
       newObservation: {
         status: this.props.currentObservation.status,
-        issued: new Date(this.props.currentObservation.issued),
+        // issued: new Date(this.props.currentObservation.issued),
         effectiveDateTime: new Date(this.props.currentObservation.effectiveDateTime),
         value: this.props.currentObservation.getValue(),
       },
@@ -70,16 +70,16 @@ class ContactDetailsEdit extends React.Component {
     }
   };
 
-  issuedChangeHandle = (newDateTime) => {
-    this.setState((oldState) => {
-      return {
-        newObservation: {
-          ...oldState.newObservation,
-          issued: newDateTime
-        }
-      }
-    })
-  };
+  // issuedChangeHandle = (newDateTime) => {
+  //   this.setState((oldState) => {
+  //     return {
+  //       newObservation: {
+  //         ...oldState.newObservation,
+  //         issued: newDateTime
+  //       }
+  //     }
+  //   })
+  // };
 
   effectiveDateTimeChangeHandle = (newDateTime) => {
     this.setState((oldState) => {
@@ -136,7 +136,7 @@ class ContactDetailsEdit extends React.Component {
   saveDataHandle = () => {
     const observationId = this.props.currentObservation.id;
     const newStatus = this.state.newObservation.status;
-    const newIssued = this.state.newObservation.issued;
+    // const newIssued = this.state.newObservation.issued;
     const newEffectiveDateTime = this.state.newObservation.effectiveDateTime;
     var patch = []
     if (newStatus !== this.state.currentObservation.status) {
@@ -146,17 +146,22 @@ class ContactDetailsEdit extends React.Component {
         value: newStatus
       })
     }
-    if (newIssued !== new Date(this.state.currentObservation.issued)) {
-      patch.push({
-        op: "replace",
-        path: "/issued",
-        value: newIssued
-      })
-    }
+    // if (newIssued !== new Date(this.state.currentObservation.issued)) {
+    //   patch.push({
+    //     op: "replace",
+    //     path: "/issued",
+    //     value: newIssued
+    //   })
+    // }
     if (newEffectiveDateTime !== new Date(this.state.currentObservation.effectiveDateTime)) {
       patch.push({
         op: "replace",
         path: "/effectiveDateTime",
+        value: newEffectiveDateTime
+      });
+      patch.push({
+        op: "replace",
+        path: "/issued",
         value: newEffectiveDateTime
       })
     }
@@ -280,14 +285,14 @@ class ContactDetailsEdit extends React.Component {
                       this.state.currentObservation.status
                     )}
                   </dd>
-                  <dt>Issued</dt>
+                  {/* <dt>Issued</dt>
                   <dd>
                     {this.state.currentObservation.issued
                       ? new Date(
                           this.state.currentObservation.issued
                         ).toLocaleString("en-US")
                       : ""}
-                  </dd>
+                  </dd> */}
                   <dt>Effective Date Time</dt>
                   <dd>
                     {this.state.currentObservation.effectiveDateTime
@@ -318,15 +323,15 @@ class ContactDetailsEdit extends React.Component {
                       </option>
                     ))}
                   </Form.Control>
-                  <Form.Label>Issued</Form.Label>
+                  {/* <Form.Label>Issued</Form.Label>
                   <br />
                   <DateTimePicker
                     format="MM-dd-y h:mm:ss a"
                     maxDate={new Date()}
                     value={this.state.newObservation.issued}
                     onChange={this.issuedChangeHandle}
-                  />
-                  <br />
+                  /> */}
+                  {/* <br /> */}
                   <Form.Label>Effective Date Time</Form.Label>
                   <br />
                   <DateTimePicker

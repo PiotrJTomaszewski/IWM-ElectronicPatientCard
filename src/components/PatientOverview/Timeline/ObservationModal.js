@@ -66,7 +66,7 @@ class ObservationModal extends React.Component {
               >
                 {capitalizeFirstLetter(this.state.currentObservation.status)}
               </dd>
-              <dt>Issued</dt>
+              {/* <dt>Issued</dt>
               <dd
                 className={
                   this.state.multiverObservation.isDifferentFromPrev("issued")
@@ -79,7 +79,7 @@ class ObservationModal extends React.Component {
                       this.state.currentObservation.issued
                     ).toLocaleString("en-US")
                   : ""}
-              </dd>
+              </dd> */}
               <dt>Effective Date Time</dt>
               <dd
                 className={
